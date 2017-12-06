@@ -1,6 +1,7 @@
 #!/usr/bin/python
 #coding=utf-8
-import httplib2, json, re, urllib, os, uuid, contextlib, zipfile, random, base64, time
+import httplib2, json, re, urllib, os, uuid, contextlib, zipfile, random, base64, time, thread
+from datetime import datetime
 # Tham khảo xbmcswift2 framework cho kodi addon tại
 # http://xbmcswift2.readthedocs.io/en/latest/
 from xbmcswift2 import Plugin, xbmc, xbmcaddon, xbmcgui, actions
@@ -21,13 +22,6 @@ sheet_headers  = {
 }
 
 def GetSheetIDFromSettings():
-	'''
-	Hàm lấy url chuyển tiếp
-	Parameters
-	----------
-	url_path : string
-		link chứa nội dung m3u playlist
-	'''
 	sid = "1rFom1XNieCQAmmhNR7t-JyRDushJWC3qkMfZ5oQnBgM"
 	resp, content = http.request(plugin.get_setting("GSheetURL"),"HEAD")
 	try:
@@ -71,7 +65,7 @@ def M3UToItems(url_path=""):
 			if item["path"].startswith("plugin://"):
 				item["is_playable"] = True
 			# Kiểu link .ts
-			elif ".ts" in item["path"]: 
+			elif re.search("\.ts$", item["path"]):
 				item["path"] = "plugin://plugin.video.f4mTester/?url=%s&streamtype=TSDOWNLOADER&use_proxy_for_chunks=True&name=%s" % (
 					urllib.quote(item["path"]),
 					urllib.quote_plus(item["label"])
@@ -95,7 +89,7 @@ def M3UToItems(url_path=""):
 def getCachedItems(url_path="0"):
 	return AddTracking(getItems(url_path))
 
-def getItems(url_path="0"):
+def getItems(url_path="0", tq="select A,B,C,D,E"):
 	'''
 	Tạo items theo chuẩn xbmcswift2 từ Google Spreadsheet
 	Parameters
@@ -124,7 +118,7 @@ def getItems(url_path="0"):
 		history["sources"] = ["https://docs.google.com/spreadsheets/d/%s/edit#gid=%s" % (sheet_id,gid)]
 	url = query_url.format(
 		sid = sheet_id,
-		tq  = urllib.quote("select A,B,C,D,E"),
+		tq  = urllib.quote(tq),
 		gid = gid
 	)
 	(resp, content) = http.request(
@@ -156,6 +150,13 @@ def getItems(url_path="0"):
 		if "plugin://" in item["path"]:
 			if "install-repo" in item["path"]:
 				item["is_playable"] = False
+			elif re.search("plugin.video.HieuHien.vn/(.+?)/.+?\://", item["path"]):
+				match = re.search("plugin.video.HieuHien.vn(/.+?/).+?\://", item["path"])
+				tmp = item["path"].split(match.group(1))
+				tmp[-1] = urllib.quote_plus(tmp[-1])
+				item["path"] = match.group(1).join(tmp)
+				if "/play/" in match.group(1):
+					item["is_playable"] = True
 			elif item["path"].startswith("plugin://plugin.video.f4mTester"):
 				item["is_playable"] = False
 				item["path"] = pluginrootpath + "/executebuiltin/" + urllib.quote_plus(item["path"])
@@ -182,13 +183,15 @@ def getItems(url_path="0"):
 					item["path"] = pluginrootpath + "/cached-section/%s@%s@%s" % (gid,sheet_id,cache_version)
 				elif match_passw:
 					item["path"] = pluginrootpath + "/password-section/%s/%s@%s" % (match_passw.group(1),gid,sheet_id)
+			elif any(service in item["path"] for service in ["www.acesoplisting.in"]):
+				item["path"] = pluginrootpath + "/acelist/" + urllib.quote_plus(item["path"])
 			elif any(service in item["path"] for service in ["fshare.vn/folder"]):
-				item["path"] = pluginrootpath + "/fshare/" + urllib.quote_plus(item["path"])
-				# item["path"] = "plugin://plugin.video.xshare/?mode=90&page=0&url=" + urllib.quote_plus(item["path"])
+				# item["path"] = pluginrootpath + "/fshare/" + urllib.quote_plus(item["path"].encode("utf8"))
+				item["path"] = "plugin://plugin.video.xshare/?mode=90&page=0&url=" + urllib.quote_plus(item["path"])
 			elif any(service in item["path"] for service in ["4share.vn/d/"]):
 				item["path"] = "plugin://plugin.video.xshare/?mode=38&page=0&url=" + urllib.quote_plus(item["path"])
-			elif any(service in item["path"] for service in ["4share.vn/f/"]):
-			# elif any(service in item["path"] for service in ["4share.vn/f/", "fshare.vn/file"]):
+			# elif any(service in item["path"] for service in ["4share.vn/f/"]):
+			elif any(service in item["path"] for service in ["4share.vn/f/", "fshare.vn/file"]):
 				item["path"] = "plugin://plugin.video.xshare/?mode=3&page=0&url=" + urllib.quote_plus(item["path"])
 				item["is_playable"] = True
 				item["path"] = pluginrootpath + "/play/" + urllib.quote_plus(item["path"])
@@ -209,15 +212,15 @@ def getItems(url_path="0"):
 			item["path"] += "?sub=" + urllib.quote_plus(item["label2"].encode("utf8"))
 		items += [item]
 	if url_path == "0":
-		add_playlist_item  = [{
+		add_playlist_item  = {
 			"context_menu": [
 				ClearPlaylists(""),
 			],
 			"label":"[COLOR yellow]*** Thêm Playlist ***[/COLOR]",
 			"path": "%s/add-playlist" % (pluginrootpath),
 			"thumbnail": "http://1.bp.blogspot.com/-gc1x9VtxIg0/VbggLVxszWI/AAAAAAAAANo/Msz5Wu0wN4E/s1600/playlist-advertorial.png"
-		}]
-		items += add_playlist_item
+		}
+		items += [add_playlist_item]
 		playlists = plugin.get_storage('playlists')
 		if 'sections' in playlists:
 			for section in playlists['sections']:
@@ -374,6 +377,40 @@ def AddPlaylist(tracking_string = "Add Playlist"):
 			dlg = xbmcgui.Dialog()
 			dlg.ok("URL không hợp lệ!!!", line1, line2, line3)
 
+@plugin.route('/acelist/<path>/<tracking_string>')
+def AceList(path = "0", tracking_string = "AceList"):
+	(resp, content) = http.request(
+		path, "GET",
+		headers=sheet_headers
+	)
+	items = []
+	match = re.compile('href="(acestream://\w+)".+?title = "(.+?)".+?data-date = "(\d+)".+?data-time = "(\d+)"').findall(cleanHTML(content))
+	tmp_date = ""
+	tmp_aceid = ""
+	for aceid, title, _date, _time in match:
+		if _date != tmp_date:
+			item = {}
+			tmp_date = _date
+			item["label"] = "[B][COLOR orange]===== %s =====[/COLOR][/B] [GMT 0]" % datetime.strptime(_date, '%Y%m%d').strftime('%a %d %B, %Y')
+			item["path"] = pluginrootpath + "/executebuiltin/-"
+			item["is_playable"] = False
+			items += [item]
+		if aceid != tmp_aceid:
+			item = {}
+			tmp_aceid = aceid
+			title = title.replace("Language ", "")
+			title = " - ".join(title.split("<br />"))
+			item["label"] = "[%s %s:%s] %s" % (_date,_time[:-2],_time[-2:],title.strip())
+			item["path"] = pluginrootpath + "/play/" + urllib.quote_plus(aceid)
+			item["path"] = "%s/play/%s/%s" % (
+				pluginrootpath,
+				urllib.quote_plus(aceid),
+				urllib.quote_plus("[AceList] %s" % item["label"])
+			)
+			item["is_playable"] = True
+			items += [item]
+	return plugin.finish(items)
+
 @plugin.route('/fshare/<path>/<tracking_string>')
 def FShare(path = "0", tracking_string = "FShare"):
 	(resp, content) = http.request(
@@ -472,20 +509,32 @@ def InstallRepo(path = "0", tracking_string = ""):
 		total = len(items)
 		i = 0
 		failed = []
+		installed = []
 		for item in items:
 			done = int(100 * i / total)
-			repo_id = item["label2"].split("/")[-1]
-			json_result = xbmc.executeJSONRPC('{"jsonrpc":"2.0","method":"Addons.GetAddons", "params":{"type":"xbmc.addon.repository"}, "id":1}')
-			repo_list = []
-			for addon in json.loads(json_result)["result"]["addons"]:
-				repo_list += [addon["addonid"]]
-			pDialog.update(done,'Đang tải', item["label2"] + '...')
-			if (item["label2"] == "") or (repo_id not in repo_list):
-				try:
-					item["path"] = "http" + item["path"].split("http")[-1]
-					download(urllib.unquote_plus(item["path"]), item["label2"])
-				except:
-					failed += [item["label"].encode("utf-8")]
+			pDialog.update(done,'Đang tải', item["label"] + '...')
+			if ":/" not in item["label2"]:
+				result = xbmc.executeJSONRPC('{"jsonrpc":"2.0","method":"Addons.GetAddonDetails", "params":{"addonid":"%s", "properties":["version"]}, "id":1}' % item["label"])
+				json_result = json.loads(result)
+				if "version" in result and version_cmp(json_result["result"]["addon"]["version"], item["label2"]) >= 0:
+					pass
+				else:
+					try:
+						item["path"] = "http" + item["path"].split("http")[-1]
+						download(urllib.unquote_plus(item["path"]), item["label"])
+						installed += [item["label"].encode("utf-8")]
+					except:
+						failed += [item["label"].encode("utf-8")]
+			else:
+				if not os.path.exists(xbmc.translatePath(item["label2"])):
+					try:
+						item["path"] = "http" + item["path"].split("http")[-1]
+						download(urllib.unquote_plus(item["path"]), item["label2"])
+						installed += [item["label"].encode("utf-8")]
+					except:
+						failed += [item["label"].encode("utf-8")]
+
+
 			if pDialog.iscanceled():
 				break
 			i+=1
@@ -496,7 +545,7 @@ def InstallRepo(path = "0", tracking_string = ""):
 			dlg.ok('Chú ý: Không cài đủ repo!', s)
 		else:
 			dlg = xbmcgui.Dialog()
-			s = "Đã cập nhật thành công"
+			s = "Đã cập nhật thành công\n%s" % "\n".join(installed)
 			dlg.ok('Cập nhật xong!', s)
 
 	else: # cài repo riêng lẻ
@@ -546,22 +595,28 @@ def RepoSection(path = "0", tracking_string = ""):
 	items = [install_all_item] + items
 	return plugin.finish(items)
 
-def download(download_path,repo_path):
+def download(download_path,repo_id):
 	'''
 	Parameters
 	----------
 	path : string
 		Link download zip repo.
-	repo_path : string
+	repo_id : string
 		Tên thư mục của repo để kiểm tra đã cài chưa.
 		Mặc định được gán cho item["label2"].
 		Truyền "" để bỏ qua Kiểm tra đã cài
 	'''
-	if repo_path == "": repo_path = "temp"
-	zipfile_path = xbmc.translatePath(os.path.join(tmp,"%s.zip" % repo_path.split("/")[-1]))
-	urllib.urlretrieve(download_path,zipfile_path)
-	with contextlib.closing(zipfile.ZipFile(zipfile_path, "r")) as z:
-		z.extractall(addons_folder)
+	if repo_id == "": repo_id = "temp"
+	if ":/" not in repo_id:
+		zipfile_path = xbmc.translatePath(os.path.join(tmp,"%s.zip" % repo_id))
+		urllib.urlretrieve(download_path,zipfile_path)
+		with contextlib.closing(zipfile.ZipFile(zipfile_path, "r")) as z:
+			z.extractall(addons_folder)
+	else:
+		zipfile_path = xbmc.translatePath(os.path.join(tmp,"%s.zip" % repo_id.split("/")[-1]))
+		urllib.urlretrieve(download_path,zipfile_path)
+		with contextlib.closing(zipfile.ZipFile(zipfile_path, "r")) as z:
+			z.extractall(xbmc.translatePath("/".join(repo_id.split("/")[:-1])))
 
 def AddTracking(items):
 	'''
@@ -608,6 +663,175 @@ def get_playable_url(url):
 		match = re.compile('(youtu\.be\/|youtube-nocookie\.com\/|youtube\.com\/(watch\?(.*&)?v=|(embed|v|user)\/))([^\?&"\'>]+)').findall(url)
 		yid   = match[0][len(match[0])-1].replace('v/','')
 		url = 'plugin://plugin.video.youtube/play/?video_id=%s' % yid
+	elif "thvli.vn/backend/cm/detail/" in url:
+		get_thvl = "https://docs.google.com/spreadsheets/d/13VzQebjGYac5hxe1I-z1pIvMiNB0gSG7oWJlFHWnqsA/export?format=tsv&gid=1287121588"
+		try:
+			(resp, content) = http.request(
+				get_thvl, "GET"
+			)
+		except:
+			header  = "Server quá tải!"
+			message = "Xin vui lòng thử lại sau"
+			xbmc.executebuiltin('Notification("%s", "%s", "%d", "%s")' % (header, message, 10000, ''))
+			return ""
+
+		tmps = content.split('\n')
+		random.shuffle(tmps)
+		for tmp in tmps:
+			try:
+				thvl_headers = {
+					'User-Agent':'Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.3; WOW64; Trident/7.0)',
+					"Accept-Encoding": "gzip, deflate, br",
+					'Accept': 'application/json',
+					'Authorization': tmp.decode('base64')
+				}
+
+				(resp, content) = http.request(
+					url, "GET", headers = thvl_headers
+				)
+				resp_json = json.loads(content)
+				if "link_play" in resp_json:
+					return resp_json["link_play"]
+			except: pass
+	elif "sphim.tv" in url:
+		http.follow_redirects = False
+		get_sphim = "https://docs.google.com/spreadsheets/d/13VzQebjGYac5hxe1I-z1pIvMiNB0gSG7oWJlFHWnqsA/export?format=tsv&gid=1082544232"
+		try:
+			(resp, content) = http.request(
+				get_sphim, "GET"
+			)
+		except:
+			header  = "Server quá tải!"
+			message = "Xin vui lòng thử lại sau"
+			xbmc.executebuiltin('Notification("%s", "%s", "%d", "%s")' % (header, message, 10000, ''))
+			return ""
+
+		tmps = content.split('\n')
+		random.shuffle(tmps)
+		for tmp in tmps:
+			try:
+				sphim_headers = {
+					'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36',
+					"Accept-Encoding": "gzip, deflate",
+					'Cookie': tmp.decode("base64")
+				}
+
+				(resp, content) = http.request(
+					url, "GET", headers = sphim_headers
+				)
+				match = re.search('"(http.+?\.smil/playlist.m3u8.+?)"', content)
+				if match:
+					return match.group(1)
+			except: pass
+	elif url.startswith("acestream://") or url.endswith(".acelive") or "arenavision.in" in url:
+		if "arenavision.in" in url:
+			h = {
+				'User-Agent'      : 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36',
+				'Cookie'          :'__cfduid=d36d59e9714c527d920417ed5bbc9315e1496259947; beget=begetok; ads_smrt_popunder=1%7CSat%2C%2003%20Jun%202017%2018%3A57%3A05%20GMT; 141054_245550_1rhpmin=yes; 141054_245550_1rhpmax=4|Sat%2C%2003%20Jun%202017%2018%3A57%3A14%20GMT; has_js=1; _ga=GA1.2.652127938.1496259947; _gid=GA1.2.653920302.1496429805; _gat=1',
+				'Accept-Encoding' : 'gzip, deflate'
+			}
+			(resp, content) = http.request(
+				url,
+				"GET", headers = h
+			)
+			url = re.search('(acestream://.+?)"', content).group(1)
+		try:
+			(resp, content) = http.request(
+				"http://localhost:6878/webui/api/service",
+				"HEAD"
+			)
+			url = url.replace("acestream://", "http://localhost:6878/ace/getstream?id=") + "&.mp4"
+			if url.endswith(".acelive"):
+				url = "http://localhost:6878/ace/getstream?url=" + urllib.quote_plus(url) + "&.mp4"
+		except:
+			url = 'plugin://program.plexus/?url=%s&mode=1&name=P2PStream&iconimage=' % urllib.quote_plus(url)
+	elif any(domain in url for domain in ["m.tivi8k.net", "m.xemtvhd.com", "xemtiviso.com"]):
+		play_url = ""
+		if "xemtiviso.com" not in url:
+			for i in range(1,8):
+				try:
+					if i > 1:
+						range_url = url.replace(".php", "-%s.php" % i)
+					h1 = {
+						'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36',
+						'Accept-Encoding': 'gzip, deflate',
+						'Referer': '%s' % url.replace("/m.","/www.")
+					}
+					(resp, content) = http.request(
+						range_url,
+						"GET", headers = h1,
+					)
+					content = content.replace("'", '"')
+					
+					try:
+						play_url = re.search("https*://api.tivi8k.net/.+?'", content).group(1)
+						(resp, content) = http.request(
+							range_url,
+							"GET", headers = h1,
+						)
+						if "#EXTM3U" in content:
+							return play_url
+						else:
+							return content.strip()
+					except: pass
+					play_url = play_url.replace("q=medium", "q=high")
+					if "v4live" in play_url:
+						return play_url
+				except: pass
+			try:
+				xemtiviso_id = re.search("/(.+?).php", url).group(1).split("-")[0]
+				xemtiviso_url = "http://sv2.xemtiviso.com/mimi.php?id=" + xemtiviso_id
+				h1 = {
+					'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36',
+					'Accept-Encoding': 'gzip, deflate',
+					'Referer': '%s' % xemtiviso_url
+				}
+				(resp, content) = http.request(
+					xemtiviso_url,
+					"GET", headers = h1,
+				)
+				content = content.replace("'", '"')
+				play_url = re.search('source\: "(.+?)"', content).group(1)
+				play_url = play_url.replace("q=medium", "q=high")
+				if "v4live" in play_url:
+					return play_url
+			except: pass
+		else:
+			try:
+				h1 = {
+					'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36',
+					'Accept-Encoding': 'gzip, deflate',
+					'Referer': '%s' % url.replace("/m.","/www.")
+				}
+				(resp, content) = http.request(
+					url,
+					"GET", headers = h1,
+				)
+				content = content.replace("'", '"')
+				play_url = re.search('source\: "(.+?)"', content).group(1)
+				play_url = play_url.replace("q=medium", "q=high")
+			except: pass
+		return play_url
+	elif "livestream.com" in url:
+		headers  = {
+			'User-Agent'      : 'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:48.0) Gecko/20100101 Firefox/48.0',
+			'Accept-Encoding' : 'gzip, deflate',
+		}
+		try:
+			if "events" not in url:
+				(resp, content) = http.request(
+					url,
+					"GET", headers = headers,
+				)
+				match = re.search("accounts/\d+/events/\d+", contentt)
+				url = "https://livestream.com/api/%s" % match.group()
+			(resp, content) = http.request(
+				url,
+				"GET", headers = headers,
+			)
+			j = json.loads(content)
+			url = j["stream_info"]["m3u8_url"]
+		except: pass
 	elif "onecloud.media" in url:
 		ocid = url.split("/")[-1].strip()
 		oc_url = "http://onecloud.media/embed/" + ocid
@@ -629,11 +853,20 @@ def get_playable_url(url):
 			message = "Không lấy được link (link hỏng hoặc bị xóa)"
 			xbmc.executebuiltin('Notification("%s", "%s", "%d", "%s")' % (header, message, 10000, ''))
 			return ""
+	elif "pscp.tv" in url:
+		pscpid = re.search("w/(.+?)($|\?)", url).group(1)
+		api_url = "https://proxsee.pscp.tv/api/v2/accessVideoPublic?broadcast_id=%s&replay_redirect=false" % pscpid
+		(resp, content) = http.request(
+			api_url,
+			"GET"
+		)
+		return json.loads(content)["hls_url"]
 	elif "google.com" in url:
 		url = getGDriveHighestQuality(url)
 	elif "fshare.vn/file" in url:
+		url = url.replace("http://", "https://")
 		http.follow_redirects = False
-		get_fshare = "https://docs.google.com/spreadsheets/d/13VzQebjGYac5hxe1I-z1pIvMiNB0gSG7oWJlFHWnqsA/export?format=tsv&gid=0"
+		get_fshare = "https://docs.google.com/spreadsheets/d/1Qys0wprZzCB__8y7k_1dal82gl-6p2oT1Mi4Hx8X3hY/export?format=tsv&gid=1368829764"
 		try:
 			(resp, content) = http.request(
 				get_fshare, "GET"
@@ -767,6 +1000,19 @@ def getGDriveHighestQuality(url):
 				url = stream.split("|")[1]
 				tail = "|User-Agent=%s&Cookie=%s" % (urllib.quote(sheet_headers["User-Agent"]),urllib.quote(resp['set-cookie']))
 				return url + tail
+
+def cleanHTML(s):
+	s = ''.join(s.splitlines()).replace('\'','"')
+	s = s.replace('\n','')
+	s = s.replace('\t','')
+	s = re.sub('  +',' ',s)
+	s = s.replace('> <','><')
+	return s
+
+def version_cmp(local_version, download_version):
+	def normalize(v):
+		return [int(x) for x in re.sub(r'(\.0+)*$','', v).split(".")]
+	return cmp(normalize(local_version), normalize(download_version))
 
 # Tạo client id cho GA tracking
 # Tham khảo client id tại https://support.google.com/analytics/answer/6205850?hl=vi

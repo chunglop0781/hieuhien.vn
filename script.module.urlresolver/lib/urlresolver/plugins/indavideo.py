@@ -14,8 +14,8 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-
-import re, json
+import json
+import re
 from lib import helpers
 from urlresolver import common
 from urlresolver.resolver import UrlResolver, ResolverError
@@ -23,7 +23,7 @@ from urlresolver.resolver import UrlResolver, ResolverError
 class IndavideoResolver(UrlResolver):
     name = "indavideo"
     domains = ["indavideo.hu"]
-    pattern = '(?://|\.)(indavideo\.hu)/(?:player/video/|video/)([^/]+)'
+    pattern = '(?://|\.)(indavideo\.hu)/(?:player/video|video)/([0-9A-Za-z-_]+)'
 
     def __init__(self):
         self.net = common.Net()
@@ -34,7 +34,7 @@ class IndavideoResolver(UrlResolver):
         html = self.net.http_GET(web_url, headers=headers).content
         data = json.loads(html)
 
-        if data['success'] == '0': 
+        if data['success'] == '0':
             html = self.net.http_GET('http://indavideo.hu/video/%s' % media_id).content
         
             hash = re.search('emb_hash.+?value\s*=\s*"([^"]+)', html)
@@ -47,15 +47,22 @@ class IndavideoResolver(UrlResolver):
             data = json.loads(html)
 
         if data['success'] == '1':
-            video_file = data['data']['video_file']
-            if video_file == '':
+            video_files = data['data']['video_files']
+            if not video_files:
                 raise ResolverError('File removed')
-            
-            video_file = video_file.rsplit('/', 1)[0] + '/'
-            sources = list(set(data['data']['flv_files']))
-            sources = [(i.rsplit('.', 2)[-2] + 'p', i.split('?')[0] + '?channel=main') for i in sources]
+
+            tokens = data['data']['filesh']
+
+            sources = []
+            if isinstance(video_files, dict): video_files = video_files.values()
+            for i in video_files:
+                match = re.search('\.(\d+)\.mp4', i)
+                if match: sources.append((match.group(1), i))	
+            sources = [(i[0], i[1] + '&token=%s' % tokens[i[0]]) for i in sources]
+            try: sources = list(set(sources))
+            except: pass
             sources = sorted(sources, key=lambda x: x[0])[::-1]
-            return video_file + helpers.pick_source(sources)
+            return helpers.pick_source(sources)
 
         raise ResolverError('File not found')
 

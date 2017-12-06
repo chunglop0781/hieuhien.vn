@@ -15,10 +15,12 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-import json
 import re
+import json
+import urllib
 import urllib2
 from urlresolver import common
+from urlresolver.common import i18n
 from lib import helpers
 from urlresolver.resolver import UrlResolver, ResolverError
 
@@ -39,45 +41,47 @@ class VidUpMeResolver(UrlResolver):
         }
         headers.update(self.headers)
         html = self.net.http_GET(web_url, headers=headers).content
-        sources = self.__parse_sources_list(html)
+        sources = helpers.parse_sources_list(html)
         if sources:
+            if len(sources) > 1:
+                try: sources.sort(key=lambda x: int(re.sub("\D", '', x[0])), reverse=True)
+                except: common.logger.log_debug('Scrape sources sort failed |int(re.sub(r"""\D""", '', x[0])|')
             try:
                 vt = self.__auth_ip(media_id)
                 if vt:
-                    source = helpers.pick_source(sources)
-                    return '%s?direct=false&ua=1&vt=%s' % (source, vt) + helpers.append_headers({'User-Agent': common.SMU_USER_AGENT})
+                    params = {'direct': 'false', 'ua': 1, 'vt': vt}
+                    return helpers.pick_source(sources) + '?' + urllib.urlencode(params) + helpers.append_headers(self.headers)
             except urllib2.HTTPError:
                 source = helpers.pick_source(sources)
                 return source
         else:
-            raise ResolverError('Unable to locate links')
-
-    def __parse_sources_list(self, html):
-        sources = []
-        match = re.search('sources\s*:\s*\[(.*?)\]', html, re.DOTALL)
-        if match:
-            for match in re.finditer('''['"]?file['"]?\s*:\s*['"]([^'"]+)['"][^}]*['"]?label['"]?\s*:\s*['"]([^'"]*)''', match.group(1), re.DOTALL):
-                stream_url, label = match.groups()
-                stream_url = stream_url.replace('\/', '/')
-                sources.append((label, stream_url))
-        return sources
+            raise ResolverError('Video Token Missing')
 
     def __auth_ip(self, media_id):
-        header = 'VidUP.me Stream Authorization'
-        line1 = 'To play this video, authorization is required'
-        line2 = 'Visit the link below to authorize the devices on your network:'
-        line3 = '[B][COLOR blue]https://vidup.me/pair[/COLOR][/B] then "Activate Streaming"'
+        header = i18n('vidup_auth_header')
+        line1 = i18n('auth_required')
+        line2 = i18n('visit_link')
+        line3 = i18n('click_pair') % ('https://vidup.me/pair')
         with common.kodi.CountdownDialog(header, line1, line2, line3) as cd:
             return cd.start(self.__check_auth, [media_id])
         
     def __check_auth(self, media_id):
-        common.log_utils.log('Checking Auth: %s' % (media_id))
+        common.logger.log('Checking Auth: %s' % (media_id))
         url = 'https://vidup.me/pair?file_code=%s&check' % (media_id)
         try: js_result = json.loads(self.net.http_GET(url, headers=self.headers).content)
-        except ValueError: raise ResolverError('Unusable Authorization Response')
-        common.log_utils.log('Auth Result: %s' % (js_result))
+        except ValueError:
+            raise ResolverError('Unusable Authorization Response')
+        except urllib2.HTTPError as e:
+            if e.code == 401:
+                js_result = json.loads(e.read())
+            else:
+                raise
+            
+        common.logger.log('Auth Result: %s' % (js_result))
         if js_result.get('status'):
             return js_result.get('response', {}).get('vt')
+        else:
+            return {}
         
     def get_url(self, host, media_id):
         return self._default_get_url(host, media_id)

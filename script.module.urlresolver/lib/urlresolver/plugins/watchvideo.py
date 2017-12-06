@@ -15,21 +15,18 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 '''
+from __generic_resolver__ import GenericResolver
 
-from lib import helpers
-from urlresolver.resolver import UrlResolver, ResolverError
-
-
-class WatchVideoResolver(UrlResolver):
+class WatchVideoResolver(GenericResolver):
     name = "watchvideo"
     domains = ["watchvideo.us", "watchvideo2.us", "watchvideo3.us",
                "watchvideo4.us", "watchvideo5.us", "watchvideo6.us",
                "watchvideo7.us", "watchvideo8.us", "watchvideo9.us",
-               "watchvideo10.us"]
+               "watchvideo10.us", "watchvideo11.us", "watchvideo12.us",
+               "watchvideo13.us", "watchvideo14.us", "watchvideo15.us",
+               "watchvideo16.us", "watchvideo17.us", "watchvideo18.us",
+               "watchvideo19.us", "watchvideo20.us", "watchvideo21.us"]
     pattern = '(?://|\.)(watchvideo[0-9]?[0-9]?\.us)/(?:embed-)?([0-9a-zA-Z]+)'
-
-    def get_media_url(self, host, media_id):
-        return helpers.get_media_url(self.get_url(host, media_id))
 
     def get_url(self, host, media_id):
         return self._default_get_url(host, media_id, 'http://{host}/{media_id}.html')

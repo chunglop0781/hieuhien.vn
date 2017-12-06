@@ -1,5 +1,5 @@
 '''
-    urlresolver XBMC Addon
+    UrlResolver Plugin
     Copyright (C) 2016 Gujal
 
     This program is free software: you can redistribute it and/or modify
@@ -15,18 +15,9 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
+from __generic_resolver__ import GenericResolver
 
-from lib import helpers
-from urlresolver.resolver import UrlResolver, ResolverError
-
-
-class MegaMP4Resolver(UrlResolver):
-    name = "megamp4.net"
-    domains = ["megamp4.net"]
-    pattern = '(?://|\.)(megamp4\.net)/(?:embed-|emb\.html\?|)([0-9a-zA-Z]+)'
-
-    def get_media_url(self, host, media_id):
-        return helpers.get_media_url(self.get_url(host, media_id))
-
-    def get_url(self, host, media_id):
-        return 'http://megamp4.net/embed-%s.html' % (media_id)
+class MegaMP4Resolver(GenericResolver):
+    name = "megamp4"
+    domains = ["megamp4.net", "megamp4.us"]
+    pattern = '(?://|\.)(megamp4\.(?:us|net))/(?:embed-|emb\.html\?|)([0-9a-zA-Z]+)'

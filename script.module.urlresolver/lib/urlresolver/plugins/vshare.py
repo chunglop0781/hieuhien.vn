@@ -15,18 +15,12 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
+from __generic_resolver__ import GenericResolver
 
-from lib import helpers
-from urlresolver.resolver import UrlResolver, ResolverError
-
-
-class VshareResolver(UrlResolver):
+class VshareResolver(GenericResolver):
     name = "vshare"
     domains = ['vshare.io']
     pattern = '(?://|\.)(vshare\.io)/\w?/(\w+)'
-
-    def get_media_url(self, host, media_id):
-        return helpers.get_media_url(self.get_url(host, media_id))
 
     def get_url(self, host, media_id):
         return 'http://vshare.io/v/%s/width-620/height-280/' % media_id

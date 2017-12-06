@@ -15,18 +15,12 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
+from __generic_resolver__ import GenericResolver
 
-from lib import helpers
-from urlresolver.resolver import UrlResolver, ResolverError
-
-
-class Play44Resolver(UrlResolver):
+class Play44Resolver(GenericResolver):
     name = "play44.net"
     domains = ["play44.net"]
     pattern = '(?://|\.)(play44\.net)/embed\.php?.*?vid=([0-9a-zA-Z_\-\./]+)[\?&]*'
-
-    def get_media_url(self, host, media_id):
-        return helpers.get_media_url(self.get_url(host, media_id), result_blacklist=['%'])
 
     def get_url(self, host, media_id):
         return 'http://play44.net/embed.php?&vid=%s' % (media_id)

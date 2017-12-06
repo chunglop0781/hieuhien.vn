@@ -16,18 +16,12 @@
     You should have received a copy of the GNU General Public License
     along with this program. If not, see <http://www.gnu.org/licenses/>.
 """
+from __generic_resolver__ import GenericResolver
 
-from lib import helpers
-from urlresolver.resolver import UrlResolver, ResolverError
-
-
-class JetloadResolver(UrlResolver):
+class JetloadResolver(GenericResolver):
     name = 'jetload'
     domains = ['jetload.tv']
     pattern = '(?://|\.)(jetload\.tv)/(?:.+?embed\.php\?u=)?([0-9a-zA-Z]+)'
-
-    def get_media_url(self, host, media_id):
-        return helpers.get_media_url(self.get_url(host, media_id))
 
     def get_url(self, host, media_id):
         return self._default_get_url(host, media_id, 'http://{host}/plugins/mediaplayer/site/_embed.php?u={media_id}')

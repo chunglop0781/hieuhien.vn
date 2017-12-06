@@ -15,18 +15,9 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 """
+from __generic_resolver__ import GenericResolver
 
-from lib import helpers
-from urlresolver.resolver import UrlResolver, ResolverError
-
-
-class RapidVideoResolver(UrlResolver):
+class RapidVideoResolver(GenericResolver):
     name = "rapidvideo.ws"
     domains = ["rapidvideo.ws"]
     pattern = '(?://|\.)(rapidvideo\.ws)/(?:embed[/-])?([0-9A-Za-z]+)'
-
-    def get_media_url(self, host, media_id):
-        return helpers.get_media_url(self.get_url(host, media_id))
-
-    def get_url(self, host, media_id):
-        return 'http://rapidvideo.ws/embed-%s.html' % media_id

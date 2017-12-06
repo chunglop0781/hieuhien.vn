@@ -15,18 +15,9 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
+from __generic_resolver__ import GenericResolver
 
-from lib import helpers
-from urlresolver.resolver import UrlResolver, ResolverError
-
-
-class Mp4EngineResolver(UrlResolver):
+class Mp4EngineResolver(GenericResolver):
     name = "mp4engine"
     domains = ["mp4engine.com"]
     pattern = '(?://|\.)(mp4engine\.com)/(?:embed-)?([0-9a-zA-Z]+)(?:-[0-9]x[0-9].html)?'
-
-    def get_media_url(self, host, media_id):
-        return helpers.get_media_url(self.get_url(host, media_id)).replace(" ", "%20")
-
-    def get_url(self, host, media_id):
-        return self._default_get_url(host, media_id)

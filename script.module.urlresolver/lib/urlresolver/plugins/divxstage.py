@@ -15,18 +15,12 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 '''
+from __generic_resolver__ import GenericResolver
 
-from lib import helpers
-from urlresolver.resolver import UrlResolver, ResolverError
-
-
-class DivxstageResolver(UrlResolver):
+class DivxstageResolver(GenericResolver):
     name = 'divxstage'
     domains = ['divxstage.eu', 'divxstage.net', 'divxstage.to', 'cloudtime.to']
     pattern = '(?://|\.)(divxstage.eu|divxstage.net|divxstage.to|cloudtime.to)/(?:video/|embed/\?v=)([A-Za-z0-9]+)'
-
-    def get_media_url(self, host, media_id):
-        return helpers.get_media_url(self.get_url(host, media_id))
 
     def get_url(self, host, media_id):
         return 'http://www.cloudtime.to/embed/?v=%s' % media_id

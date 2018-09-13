@@ -10,7 +10,7 @@ img="special://home/addons/plugin.program.hieuitwizard/media/1gbram.png"
 fanart="special://home/addons/plugin.program.hieuitwizard/media/hieuit.wizard.jpg"
 description="Thiet lap file Advanced Seeting cho Kodi"
 
-name="Update 13/09/2018"
+name="Update 13092018"
 url="https://dl.dropboxusercontent.com/s/c7q742eqtvogfq2/13092018.zip"
 img="special://home/addons/plugin.program.hieuitwizard/media/1gbram.png"
 fanart="special://home/addons/plugin.program.hieuitwizard/media/hieuit.wizard.jpg"

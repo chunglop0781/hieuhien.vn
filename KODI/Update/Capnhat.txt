@@ -1,0 +1,5 @@
+name="Update 13/09/2018"
+url="https://dl.dropboxusercontent.com/s/c7q742eqtvogfq2/13092018.zip"
+img="special://home/addons/plugin.program.HieuHien.vn/media/update.png"
+fanart="special://home/addons/plugin.program.HieuHien.vn/media/fanart.jpg"
+description="Cai dat goi cap nhat cho addon Kodi"

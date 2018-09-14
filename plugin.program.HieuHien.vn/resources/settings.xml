@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<settings>
+	<category label="Thông tin">
+		<setting id="thanks" type="text" label="[B]Addon được [COLOR red]HieuHien.vn[/COLOR] chỉnh sửa từ addon của tác giả [COLOR lime]HieuIT[/COLOR][/B]"></setting>
+		<setting id="thanks" type="text" label="[I]Mọi nội dung được lấy từ Internet và chia sẻ miễn phí cho cộng đồng[/I]"></setting>
+		<setting id="thanks" type="text" label="[I]Chúng tôi không chịu trách nhiệm về bất kỳ vấn đề nào liên quan![/I]"></setting>
+		<setting id="thanks" type="text" label="[B]Nếu có thắc mắc, vui lòng liên hệ:[/B]"></setting>
+		<setting id="thanks" type="text" label="[B]*Fanpage: [COLOR blue]facebook.com/HieuHien.vn[/COLOR][/B]"></setting>
+		<setting id="thanks" type="text" label="[B]*Channel: [COLOR red]youtube.com/HieuHienVideo[/COLOR][/B]"></setting>
+		<setting id="thanks" type="text" label="[B]*Hotline/Zalo: [COLOR red]0918 778 013 - 0979 528 013[/COLOR][/B]"></setting>
+		<setting id="thanks" type="text" label="[B]Showroom 01: [COLOR lime]1A Bắc Hải, P.15, Q.10, TP.HCM[/COLOR][/B]" />
+		<setting id="thanks" type="text" label="[B]Showroom 02: [COLOR lime]90C Phan Đăng Lưu, P.7, Q.Phú Nhuận, TP.HCM[/COLOR][/B]" />
+		<setting id="thanks" type="text" label="[B]HieuHien.vn - Hệ thống bán lẻ thiết bị thông minh[/B]"/>
+		
+	</category>	
+    <category label="Auto-View">
+		<setting id="auto-view" type="bool" label="Enable Auto View" default="true"/>
+		<setting id="MAIN" type="number" label="MAIN" default="500" enable="!eq(-1,false)"/>
+        </category>
+</settings>

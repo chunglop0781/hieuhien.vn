@@ -1,5 +1,0 @@
-name="HieuHien.vn Program"
-url="https://dl.dropboxusercontent.com/s/jhb9tiwvlfhj1pd/hieuit.wizard.zip"
-img="special://home/addons/plugin.program.hieuitwizard/media/hieuit.wizard.png"
-fanart="special://home/addons/plugin.program.hieuitwizard/media/hieuit.wizard.jpg"
-description="Cai dat cac Addon xem phim nhanh nhat"

@@ -1,5 +1,0 @@
-name="KODI 17 Skin Estuary Test"
-url="https://dl.dropboxusercontent.com/s/f2ws58jx9w97bsi/Kodi17EstuaryTest.zip"
-img="special://home/addons/plugin.program.hieuitwizard/media/1gbram.png"
-fanart="special://home/addons/plugin.program.hieuitwizard/media/hieuit.wizard.jpg"
-description="Thiet lap file Advanced Seeting cho Kodi"

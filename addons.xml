@@ -17,79 +17,97 @@
     </extension>
 </addon>
 
-<addon id="plugin.audio.hieuhien.vn.itv.music"
-       version="1.0.1"
-       name="ITV Music"
-       provider-name="itv member">
-  <requires>
-    <import addon="xbmc.python" version="2.1.0" optional="true" />
-  </requires>
-  <extension point="xbmc.python.pluginsource" library="default.py">
-        <provides>audio</provides>
-  </extension>
-  <extension point="xbmc.addon.metadata">
-    <summary>Entertainment</summary>
-    <description>Nghe nhạc online</description>
-	<disclaimer lang="en">Nguồn data trên web nên chúng tôi không chịu trách nhiệm về sự ổn định.</disclaimer>
-    <platform>all</platform>
-  </extension>
-</addon>
-
-<addon id="plugin.audio.hieuhien.vn.itv.nhacso"
-       name="Nhạc Số"
-       version="1.0.1"
-       provider-name="itv member">
+<addon id="plugin.hieuhien.vn.googledrive" name="Google Drive" version="1.2.11" provider-name="Carlos Guzman (cguZZman)">
 	<requires>
-		<import addon="xbmc.python" version="2.1.0" />
-		<import addon="script.module.simple.downloader" version="1.9.4" />
+		<import addon="xbmc.python" version="2.25.0" />
+		<import addon="script.module.clouddrive.common" version="1.2.8"/>
 	</requires>
-  	<extension point="xbmc.python.pluginsource" library="default.py" >
-  		<provides>audio</provides>
- 	 </extension>
-  	<extension point="xbmc.addon.metadata">
-		<summary lang="en">Entertainment</summary>
-		<description lang="en">Thử nghiệm nghe nhạc tại http://nhacso.net/</description>
-        <disclaimer lang="en">Nguồn data trên web nên chúng tôi không chịu trách nhiệm về sự ổn định.</disclaimer>
-        <platform>all</platform>
-        <language>en</language>
-    </extension>
-</addon>
-
-<addon id="plugin.audio.hieuhien.vn.vietmusic"
-       version="1.8.3"
-       name="VietMusic"
-       provider-name="VietMusic">
-  <requires>
-    <import addon="xbmc.python" version="2.1.0" optional="true" />
-	<import addon="script.module.simple.downloader" version="1.9.4" />
-	<import addon="script.module.t0mm0.common" version="1.1.0"/>
-  </requires>
-  <extension point="xbmc.python.pluginsource" library="default.py">
-        <provides>audio</provides>
-  </extension>
-  <extension point="xbmc.addon.metadata">
-    <summary>Viet Music online</summary>
-    <description>Add-on play Vietnamese Music online</description>
-    <platform>all</platform>
-  </extension>
-</addon>
-
-<addon id="plugin.audio.hieuhien.vn.xsharefree" name="[COLOR lime][B]Xshare [/COLOR][COLOR red]Music[/COLOR] [COLOR blue]Center[/B][/COLOR]" version="3.4.5.1" provider-name="thaitni">
-    <requires>
-        <import addon="xbmc.python" version="2.1.0" optional="true" />
-    </requires>
-    <extension point="xbmc.python.pluginsource" library="xshare.py">
-        <provides>audio</provides>
-    </extension>
-    <extension point="xbmc.addon.metadata">
-        <summary>Xshare - XBMC HD Video</summary>
-		<description lang="en">Tìm và nghe nhạc trên XBMC từ: chiasenhac.com, nhaccuatui.com va nhacdj.vn</description>
+	<extension point="xbmc.python.pluginsource" library="addon.py">
+		<provides></provides>
+	</extension>
+	<extension point="xbmc.service" library="service.py" start="login" />
+	<extension point="xbmc.addon.metadata">
 		<platform>all</platform>
-		<language>en</language>
-		<license>GNU General Public License - v2</license>
-		<source>https://github.com/thaitni/xbmc.repo.xshare</source>
-		<email>thai@thanhthai.net</email>
-    </extension>
+		<summary lang="en_GB">Google Drive for KODI</summary>
+		<description lang="en_GB">
+Play all your media from Google Drive including Videos, Music and Pictures (including Google Photos).
+ - Unlimited number of accounts.
+ - Team Drives support
+ - Google Photos support
+ - Search over your drive.
+ - Auto-Refreshed slideshow.
+ - Export your videos to your library (.strm files)
+ - Use Google Drive as a source
+ - This program is not affiliated with or sponsored by Google.
+		</description>
+		<summary lang="he_IL">כונן Google Drive של מיקרוסופט עבור קודי</summary>
+		<description lang="he_IL">
+הפעל את כל המדיה שלך מ- Google Drive כולל וידאו, מוסיקה ותמונות.
+  - מספר בלתי מוגבל של חשבונות.
+  - חיפוש ומציאת הכונן שלך.
+  - ריענון מצגת אוטומטית.
+  - ייצוא קטעי הווידאו לספרייה שלך (קבצי .strm)
+  - שימוש ב-Google Drive כמקור
+  - תוכנית זו אינה קשורה או ממומנת על ידי Google.
+		</description>
+		<license>GNU GENERAL PUBLIC LICENSE. Version 3, 29 June 2007</license>
+		<source>https://github.com/cguZZman/plugin.hieuhien.vn.googledrive</source>
+		<forum>https://github.com/cguZZman/plugin.hieuhien.vn.googledrive/issues</forum>
+		<website>https://addons.kodi.tv/show/plugin.hieuhien.vn.googledrive</website>
+		<news>
+v1.2.11 released Sep 20, 2018:
+- Resume points and watched status for strm files in library
+v1.2.10 released Sep 12, 2018:
+- Google Photos fix
+- Order by date fix
+v1.2.8 released Sep 11, 2018:
+- Subtitles assigned in source mode
+- Fixes
+v1.2.6 released Aug 26, 2018:
+- Team drive list fix
+v1.2.4 released Aug 24, 2018:
+- strm files saved in the cloud are exported as is.
+v1.2.3 released Aug 17, 2018:
+- Auto export and watch export folder.
+- Fixes
+v1.2.2 released Jul 15, 2018:
+- Fix requesting files with a single quote in the name in source mode.
+v1.2.1 released Jul 14, 2018:
+- Source mode fix
+v1.2.0 released Jul 12, 2018:
+- Team Drive support
+v1.1.0 released Jul 11, 2018:
+- New mode for source and download services. Both moved to respective addons.
+- Source service fixed.
+v1.0.5 released July 6, 2018:
+- Fix display more than 100 files in source mode
+v1.0.4 released July 5, 2018:
+- Fix exporting and google photos
+v1.0.3 released April 13, 2018:
+- Fix bug playing files with a single quote in the name.
+v1.0.2 released March 15, 2018:
+- Bug fixes
+- Auto export strm
+- Select stream format
+v1.0.1 released Nov 30, 2017:
+- Bug fixes
+v1.0.0 Nov 6, 2017:
+- First release
+		</news>
+		<disclaimer lang="en_GB">
+This cloud drive addon uses a third-party authentication mechanism commonly known as OAuth 2.0.
+If you want to know more about OAuth 2.0 you can visit the following pages:
+- https://oauth.net/2/
+- https://developers.google.com/identity/protocols/OAuth2
+- https://docs.microsoft.com/en-us/onedrive/developer/rest-api/getting-started/msa-oauth
+
+Kodi and myself take no responsibility or liability.
+
+The authentication server URL is specified in Settings / Advanced / Sign-in Server. The Sign-in Server implements the OAuth 2.0 protocol.
+The complete source code of the Sign-in Server can be download here: https://github.com/cguZZman/drive-login
+You can clone the project and host it in your own server.
+		</disclaimer>
+	</extension>
 </addon>
 
 <addon id="plugin.program.gdrive" version="0.7.6" name="gdrive" provider-name="ddurdle">
@@ -1306,27 +1324,6 @@ Initial Release
 </addon>
 
 <addon
-	id="plugin.video.HieuHienLiveShow"
-	version="1.0.1"
-	name="[COLOR lime][B]HieuHienLiveShow[/B][/COLOR]"
-	provider-name="Hieuhien.vn">
-	<requires>
-		<import addon="script.module.simplejson" />
-		<import addon="xbmc.python" version="2.1.0"/>
-		<import addon="script.module.simple.downloader" version="1.9.4" />
-	</requires>
-	<extension point="xbmc.python.pluginsource" library="liveshow.py">
-		<provides></provides>
-	</extension>
-	<extension point="xbmc.addon.metadata">
-		<summary>[COLOR red]Hieuhien.vn[/COLOR]</summary>
-		<description>[COLOR lime][B]Add-on xem các show diễn ca nhạc, hài kịch online[/B][/COLOR]</description>
-		<disclaimer>Tất cả nội dung được lấy từ Internet - chúng tôi hoàn toàn không chịu trách nhiệm về bản quyền hay độ ổn định của chương trình</disclaimer>
-		<platform>all</platform>
-	</extension>
-</addon>
-
-<addon
 	id="plugin.video.HieuHienTV"
 	version="1.0.1"
 	name="[COLOR lime][B]HieuHienTV[/B][/COLOR]"
@@ -1469,21 +1466,6 @@ Initial Release
     <forum>http://forums.tvaddons.ag</forum>
     <platform>all</platform>
   </extension>
-</addon>
-
-<addon id="repository.cantobumedia" name="Cantobu Media Repository" version="1.0.0" provider-name="phuoclv">
-	<extension point="xbmc.addon.repository" name="Official XBMC.org Add-on Repository">
-		<info compressed="true">https://raw.githubusercontent.com/phuoclv/repository.cantobumedia/master/addons.xml</info>
-		<checksum>https://raw.githubusercontent.com/phuoclv/repository.cantobumedia/master/addons.xml.md5</checksum>
-		<datadir zip="true">https://raw.githubusercontent.com/phuoclv/repository.cantobumedia/master</datadir>
-		<hashes>true</hashes>
-	</extension>
-	<extension point="xbmc.addon.metadata">
-		<summary>Cantobu Media Entertainment</summary>
-		<description>Giải trí trên XBMC/Kodi</description>
-		<disclaimer></disclaimer>
-		<platform>all</platform>
-	</extension>
 </addon>
 
 <addon id="repository.datho.xbmc-plugins" name="Datho Add-on Repository" version="1.0.0" provider-name="Datho-Digital">
@@ -1711,19 +1693,6 @@ Initial Release
 	</extension>
 </addon>
 
-<addon id="repository.podgod" name="podgod repo" version="1.7" provider-name="podgod">
-	<extension point="xbmc.addon.repository" name="PodGod Addon Repository">
-		<info compressed="false">http://offshoregit.com/podgod/repo/addons.xml</info>
-		<checksum>http://offshoregit.com/podgod/repo/addons.xml.md5</checksum>
-		<datadir zip="true">http://offshoregit.com/podgod/repo/zips</datadir>
-	</extension>
-	<extension point="xbmc.addon.metadata">
-		<summary>Install My Addons</summary>
-		<description>Download and install addons from podgod!</description>
-		<platform>all</platform>
-	</extension>
-</addon>
-
 <addon id="repository.shani" name="Shanis Addon Repository" version="2.9" provider-name="Shani">
 	<extension point="xbmc.addon.repository" name="Shanis Addon Repository">
         <dir>
@@ -1782,22 +1751,9 @@ Initial Release
 	</extension>
 </addon>
 
-<addon id="repository.vietccloud" name="VietcCloud Repository" version="1.0.0" provider-name="podgod-clone">
-	<extension point="xbmc.addon.repository" name="vietcCloud Addon Repository">
-		<info compressed="false">https://github.com/vietccloudtv/repository.vietccloud/raw/master/addons.xml</info>
-		<checksum>https://github.com/vietccloudtv/repository.vietccloud/raw/master/addons.xml.md5</checksum>
-		<datadir zip="true">https://github.com/vietccloudtv/repository.vietccloud/raw/master/zips</datadir>
-	</extension>
-	<extension point="xbmc.addon.metadata">
-		<summary>Kodi repository</summary>
-		<description>Repository for Kodi</description>
-		<platform>all</platform>
-	</extension>
-</addon>
-
 <addon id="repository.vietmedia"
 		name="VietMedia Add-ons"
-		version="1.0.2"
+		version="1.0.3"
 		provider-name="VietMedia">
   <extension point="xbmc.addon.repository"
 		name="VietMedia Add-on Repository">
@@ -1808,28 +1764,6 @@ Initial Release
 	</extension>
 	<extension point="xbmc.addon.metadata">
 		<summary lang="en">VietMedia Entertainment</summary>
-		<description lang="en"></description>
-		<disclaimer lang="en"></disclaimer>
-		<platform>all</platform>
-	</extension>
-</addon>
-
-<addon id="repository.vnmusic"
-		name="Vietnam music Add-ons"
-		version="0.9"
-		provider-name="MrOdin">
-  <requires>
-    <import addon="xbmc.addon" version="12.0.0"/>
-  </requires>
-	<extension point="xbmc.addon.repository"
-		name="VietMedia Add-on Repository">
-		<info compressed="true">https://raw.githubusercontent.com/tamnm/kodi.mp3.zing.vn/master/addons.xml</info>
-		<checksum>https://raw.githubusercontent.com/tamnm/kodi.mp3.zing.vn/master/addons.xml.md5</checksum>
-		<datadir zip="true">https://raw.githubusercontent.com/tamnm/kodi.mp3.zing.vn/master</datadir>
-		<hashes>true</hashes>
-	</extension>
-	<extension point="xbmc.addon.metadata">
-		<summary lang="en">Vietname music add-ons</summary>
 		<description lang="en"></description>
 		<disclaimer lang="en"></disclaimer>
 		<platform>all</platform>

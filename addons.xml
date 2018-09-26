@@ -1135,7 +1135,7 @@ Initial Release
 </addon>
 
 
-<addon id="plugin.video.webgiaitri" version="1.1.9" name="[COLOR violet][B]Web Giai Tri[/B][/COLOR]" provider-name="chanmodoi">
+<addon id="plugin.video.hieuhien.vn.webgiaitri" version="1.1.9.1" name="[COLOR yellow][B]Web Giai Tri[/B][/COLOR]" provider-name="chanmodoi">
 	<requires>
 		<import addon="xbmc.python" version="2.1.0" />
 		<import addon="script.module.parsedom" version="0.9.1"/>
@@ -1143,14 +1143,13 @@ Initial Release
 		<import addon="script.module.requests" version="2.7.0" />
 		<import addon="script.module.beautifulsoup4" version="4.3.1"/>
 		<import addon="script.module.html5lib" version="0.999.0"/>
-
 	</requires>
 	<extension point="xbmc.python.pluginsource" library="addon.py">
 		<provides></provides>
 	</extension>
 	<extension point="xbmc.addon.metadata">
 		<summary>Web Giai Tri</summary>
-		<description>See videos and photos from some Vietnamese site: xem.com, ngamvn.com, haivainoi.com, gioitre.net, Beat.vn, talktv.vn </description>
+		<description>See videos and photos from some Vietnamese sites: xem.vn, gioitre.net, ngamvn.com</description>
 		<platform>all</platform>
 		<language>vi</language>
 		<license>GNU GENERAL PUBLIC LICENSE. Version 2, June 1991</license>

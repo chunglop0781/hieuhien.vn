@@ -4,7 +4,7 @@
     <import addon="xbmc.python" version="2.1.0"/>
   </requires>
   <extension point="xbmc.python.pluginsource" library="default.py">
-        <provides>program executable</provides>
+        <provides></provides>
   </extension>
   <extension point="xbmc.addon.metadata">
     <summary lang="en">HieuHien.vn</summary>
@@ -13,21 +13,8 @@
 	</description>
     <platform>all</platform>
 	<news>
-v1.2.1
-- Sửa lỗi không giải nén được Movies Library
-v1.2.0
-- Thêm Movies Library lấy nguồn từ Google Drive
-- Thêm Menu Restore Data
-- Thêm Menu Donate
-v1.1.2
-- Sửa một vài chức năng
-- Thay Addon Gdrive bằng Google Drive: khắc phục được lỗi không xem phim với phụ đề kèm theo
-- Tạo thư viện phim từ addon Google Drive với poster, Fanart
-- Thêm Farourites vào menu home
-- Thêm chức năng dọn rác
-- Thêm chức năng set cache cho file Advanced Setting
-v1.1.1
-Initial Release
+v1.0.0
+Start
     </news>
   </extension>
 </addon>

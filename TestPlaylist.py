@@ -24,8 +24,8 @@ addons_folder = xbmc.translatePath('special://home/addons')
 image = xbmc.translatePath(os.path.join(path, "icon.png"))
 
 plugin = Plugin()
-addon = xbmcaddon.Addon("plugin.video.HieuHien.vn")
-pluginrootpath = "plugin://plugin.video.HieuHien.vn"
+addon = xbmcaddon.Addon("plugin.video.plugin.video.HieuHien.vn")
+pluginrootpath = "plugin://plugin.video.plugin.video.HieuHien.vn"
 http = httplib2.Http(cache, disable_ssl_certificate_validation=True)
 query_url = "https://docs.google.com/spreadsheets/d/{sid}/gviz/tq?gid={gid}&headers=1&tq={tq}"
 sheet_headers = {
@@ -175,9 +175,9 @@ def getItems(url_path="0", tq="select A,B,C,D,E"):
 		if "plugin://" in item["path"]:
 			if "install-repo" in item["path"]:
 				item["is_playable"] = False
-			elif re.search("plugin.video.HieuHien.vn/(.+?)/.+?\://", item["path"]):
+			elif re.search("plugin.video.plugin.video.HieuHien.vn/(.+?)/.+?\://", item["path"]):
 				match = re.search(
-					"plugin.video.HieuHien.vn(/.+?/).+?\://", item["path"])
+					"plugin.video.plugin.video.HieuHien.vn(/.+?/).+?\://", item["path"])
 				tmp = item["path"].split(match.group(1))
 				tmp[-1] = urllib.quote_plus(tmp[-1])
 				item["path"] = match.group(1).join(tmp)
@@ -232,15 +232,15 @@ def getItems(url_path="0", tq="select A,B,C,D,E"):
 				# https://www.youtube.com/channel/UC-9-kyTW8ZkZNDHQJ6FgpwQ
 				yt_route = "ytcp" if "playlists" in item["path"] else "ytc"
 				yt_cid = re.compile("youtube.com/channel/(.+?)$").findall(item["path"])[0]
-				item["path"] = "plugin://plugin.video.hieuhien.vn.launcher/%s/%s/" % (
+				item["path"] = "plugin://plugin.video.kodi4vn.launcher/%s/%s/" % (
 					yt_route, yt_cid)
 				item["path"] = item["path"].replace("/playlists", "")
 			elif "youtube.com/playlist" in item["path"]:
 				# https://www.youtube.com/playlist?list=PLFgquLnL59alCl_2TQvOiD5Vgm1hCaGSI
 				yt_pid = re.compile("list=(.+?)$").findall(item["path"])[0]
-				item["path"] = "plugin://plugin.video.hieuhien.vn.launcher/ytp/%s/" % yt_pid
+				item["path"] = "plugin://plugin.video.kodi4vn.launcher/ytp/%s/" % yt_pid
 			elif any(ext in item["path"] for ext in [".png", ".jpg", ".bmp", ".jpeg"]):
-				item["path"] = "plugin://plugin.video.hieuhien.vn.launcher/showimage/%s/" % urllib.quote_plus(
+				item["path"] = "plugin://plugin.video.kodi4vn.launcher/showimage/%s/" % urllib.quote_plus(
 					item["path"])
 			elif re.search("\.ts$", item["path"]):
 				item["path"] = "plugin://plugin.video.f4mTester/?url=%s&streamtype=TSDOWNLOADER&use_proxy_for_chunks=True&name=%s" % (
@@ -730,7 +730,7 @@ def AddTracking(items):
 	'''
 
 	for item in items:
-		if "plugin.video.HieuHien.vn" in item["path"]:
+		if "plugin.video.plugin.video.HieuHien.vn" in item["path"]:
 			tmps = item["path"].split("?")
 			if len(tmps) == 1:
 				tail = ""
@@ -1096,9 +1096,8 @@ def GetFShareCred():
 
 
 def LoginOKNoti(user="",lvl=""):
-	header = "Đăng nhập thành công!"
-	#message = "Chào user [COLOR orange]{}[/COLOR] (lvl [COLOR yellow]{}[/COLOR])".format(user, lvl)
-	xbmc.executebuiltin('Notification("{}", "{}", "{}", "")'.format(header, message, "10000"))
+	header = "[COLOR red]HieuHien.vn [/COLOR][COLOR lime]chúc bạn xem phim vui vẻ![/COLOR]"
+	xbmc.executebuiltin('Notification("{}", "")'.format(header, "10000"))
 
 
 def GetFShareUser(cred):

@@ -232,15 +232,15 @@ def getItems(url_path="0", tq="select A,B,C,D,E"):
 				# https://www.youtube.com/channel/UC-9-kyTW8ZkZNDHQJ6FgpwQ
 				yt_route = "ytcp" if "playlists" in item["path"] else "ytc"
 				yt_cid = re.compile("youtube.com/channel/(.+?)$").findall(item["path"])[0]
-				item["path"] = "plugin://plugin.video.kodi4vn.launcher/%s/%s/" % (
+				item["path"] = "plugin://plugin.video.hieuhien.vn.launcher/%s/%s/" % (
 					yt_route, yt_cid)
 				item["path"] = item["path"].replace("/playlists", "")
 			elif "youtube.com/playlist" in item["path"]:
 				# https://www.youtube.com/playlist?list=PLFgquLnL59alCl_2TQvOiD5Vgm1hCaGSI
 				yt_pid = re.compile("list=(.+?)$").findall(item["path"])[0]
-				item["path"] = "plugin://plugin.video.kodi4vn.launcher/ytp/%s/" % yt_pid
+				item["path"] = "plugin://plugin.video.hieuhien.vn.launcher/ytp/%s/" % yt_pid
 			elif any(ext in item["path"] for ext in [".png", ".jpg", ".bmp", ".jpeg"]):
-				item["path"] = "plugin://plugin.video.kodi4vn.launcher/showimage/%s/" % urllib.quote_plus(
+				item["path"] = "plugin://plugin.video.hieuhien.vn.launcher/showimage/%s/" % urllib.quote_plus(
 					item["path"])
 			elif re.search("\.ts$", item["path"]):
 				item["path"] = "plugin://plugin.video.f4mTester/?url=%s&streamtype=TSDOWNLOADER&use_proxy_for_chunks=True&name=%s" % (
@@ -1096,8 +1096,9 @@ def GetFShareCred():
 
 
 def LoginOKNoti(user="",lvl=""):
-	header = "HieuHien.vn chúc bạn xem phim vui vẻ!"
-	xbmc.executebuiltin('Notification("{}", "")'.format(header, "10000"))
+	header = "Đăng nhập thành công!"
+	#message = "Chào user [COLOR orange]{}[/COLOR] (lvl [COLOR yellow]{}[/COLOR])".format(user, lvl)
+	xbmc.executebuiltin('Notification("{}", "{}", "{}", "")'.format(header, message, "10000"))
 
 
 def GetFShareUser(cred):

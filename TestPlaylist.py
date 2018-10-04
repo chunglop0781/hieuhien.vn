@@ -1098,7 +1098,7 @@ def GetFShareCred():
 def LoginOKNoti(user="",lvl=""):
 	header = "[COLOR red]HieuHien.vn [/COLOR][COLOR lime]chúc bạn xem phim vui vẻ![/COLOR]"
 	message = "[COLOR blue][B]facebook.com/HieuHien.vn[/B][/COLOR]"
-	xbmc.executebuiltin('Notification("{}", "{}", "")'.format(header, message, "20000"))
+	xbmc.executebuiltin('Notification("{}", "{}","{}", "")'.format(header, message, "20000"))
 
 
 def GetFShareUser(cred):

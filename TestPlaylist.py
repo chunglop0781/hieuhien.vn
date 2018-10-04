@@ -46,7 +46,7 @@ def GetSheetIDFromSettings():
 
 def M3UToItems(url_path=""):
 	'''
-	Hàm chuyển đổi m3u playlist sang xbmcswift2 items
+	Hàm chuyển đổi  m3u playlist sang xbmcswift2 items
 	Parameters
 	----------
 	url_path : string

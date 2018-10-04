@@ -383,7 +383,7 @@ def PasswordSection(password="0000", path="0", tracking_string="Home"):
 			header = "Sai mật khẩu!!!"
 			message = "Mật khẩu không khớp. Không tải được nội dung"
 			xbmc.executebuiltin('Notification("%s", "%s", "%d", "%s")' %
-			                    (header, message, 10000, ''))
+			                    (header, message, 20000, ''))
 			return plugin.finish()
 
 
@@ -1098,7 +1098,7 @@ def GetFShareCred():
 def LoginOKNoti(user="",lvl=""):
 	header = "[COLOR red]HieuHien.vn [/COLOR][COLOR lime]chúc bạn xem phim vui vẻ![/COLOR]"
 	message = "[COLOR blue][B]facebook.com/HieuHien.vn[/B][/COLOR]"
-	xbmc.executebuiltin('Notification("{}", "{}", "")'.format(header, message, "10000"))
+	xbmc.executebuiltin('Notification("{}", "{}", "")'.format(header, message, "20000"))
 
 
 def GetFShareUser(cred):

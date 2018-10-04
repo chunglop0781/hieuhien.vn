@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="repository.hieuhien.vn" version="1.0.1" name="[B][COLOR lime]Hieuhien.vn Repository[/COLOR][/B]" provider-name="Hieuhien.vn">
+<addon id="repository.hieuhien.vn" version="1.0.2" name="[B][COLOR lime]Hieuhien.vn Repository[/COLOR][/B]" provider-name="Hieuhien.vn">
 	<requires>
 		<import addon="xbmc.addon" version="12.0.0"/>
 	</requires>
@@ -23,29 +23,14 @@
 			<datadir zip="true">http://thong.viettv24.com/kodi4vn/</datadir>
 		</dir>
 		<dir>
-			<info compressed="false">https://github.com/tvaddonsco/tva-resolvers-repo/raw/master/addons.xml</info>
-			<checksum>https://github.com/tvaddonsco/tva-resolvers-repo/raw/master/addons.xml.md5</checksum>
-			<datadir zip="true">https://github.com/tvaddonsco/tva-resolvers-repo/raw/master/zips/</datadir>
-		</dir>
-    <dir>
-			<info compressed="false">https://github.com/tvaddonsco/tva-release-repo/raw/master/addons.xml</info>
-			<checksum>https://github.com/tvaddonsco/tva-release-repo/raw/master/addons.xml.md5</checksum>
-			<datadir zip="true">https://github.com/tvaddonsco/tva-release-repo/raw/master/</datadir>
-    </dir>
-		<dir>
-			<info compressed="false">https://raw.githubusercontent.com/marcelveldt/repository.marcelveldt/master/addons.xml</info>
-			<checksum>https://raw.githubusercontent.com/marcelveldt/repository.marcelveldt/master/addons.xml.md5</checksum>
-			<datadir zip="true">https://raw.githubusercontent.com/marcelveldt/repository.marcelveldt/master/</datadir>
+			<info compressed="true">https://raw.github.com/thanhnguyenphu/hdplay.kodi/master/addons.xml</info>
+			<checksum>https://raw.github.com/thanhnguyenphu/hdplay.kodi/master/addons.xml.md5</checksum>
+			<datadir zip="true">https://github.com/thanhnguyenphu/hdplay.kodi/raw/master/zips/</datadir>
 		</dir>
 		<dir>
-			<info compressed="false">https://github.com/jdf76/repository/raw/master/addons.xml</info>
-			<checksum>https://github.com/jdf76/repository/raw/master/addons.xml.md5</checksum>
-			<datadir zip="true">https://github.com/jdf76/repository/raw/master/zips</datadir>
-		</dir>
-		<dir>
-			<info compressed="false">https://raw.githubusercontent.com/kodibae/repository.kodibae/master/addons.xml</info>
-			<checksum>https://raw.githubusercontent.com/kodibae/repository.kodibae/master/addons.xml.md5</checksum>
-			<datadir zip="true">https://raw.githubusercontent.com/kodibae/repository.kodibae/master/</datadir>
+			<info compressed="true">http://xbmc.itvplus.net/REPO/addons.xml</info>
+			<checksum>http://xbmc.itvplus.net/REPO/addons.xml.md5</checksum>		
+			<datadir zip="true">http://xbmc.itvplus.net/REPO</datadir>
 		</dir>
 	</extension>
 	<extension point="xbmc.addon.metadata">

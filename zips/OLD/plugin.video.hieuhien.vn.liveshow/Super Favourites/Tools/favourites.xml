@@ -1,7 +1,0 @@
-<favourites>
-	<favourite name="Test My Download Speed" thumb="http://totalxbmc.tv/totalrevolution/art/\Speed_Test.png">ActivateWindow(10001,&quot;plugin://plugin.program.totalinstaller/?description&amp;fanart=C%3a%5cUsers%5cDouglas%5cAppData%5cRoaming%5cKodi%5caddons%5cplugin.program.totalinstaller%5cfanart.jpg&amp;mode=speedtest_menu&amp;name=Test%20My%20Download%20Speed&amp;url=none&amp;video&quot;,return)</favourite>
-	<favourite name="Maintenance" thumb="special://home/addons/script.rawmaintenance/media/maintenance.png">ActivateWindow(10001,&quot;plugin://script.rawmaintenance/?mode=5&amp;name=Maintenance&amp;url=url&quot;,return)</favourite>
-	<favourite name="My IP" thumb="special://home/addons/plugin.program.myip/icon.png">ActivateWindow(10001,&quot;plugin://plugin.program.myip/&quot;,return)</favourite>
-	<favourite name="Android Apps" thumb="special://home/addons/skin.carbon/icons/EPG.png">ActivateWindow(10001,&quot;androidapp://sources/apps/&quot;,return)</favourite>
-	<favourite name="Program Add-ons" thumb="DefaultAddonProgram.png">ActivateWindow(10001,&quot;addons://sources/executable/&quot;,return)</favourite>
-</favourites>

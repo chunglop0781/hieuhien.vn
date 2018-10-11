@@ -1,3 +1,0 @@
-﻿<settings>
-	<setting id="trans_sub" type="bool" label="Tự động dịch sau khi download sub tiếng Anh(y/n)" default="true"/>
-</settings>

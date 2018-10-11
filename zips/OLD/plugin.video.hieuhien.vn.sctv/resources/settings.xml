@@ -1,6 +1,0 @@
-﻿<settings>
-	<category label="Thông tin Account của bạn đăng ký tại tv24.vn">
-		<setting id="usernamesctv" type="text" label="Username tv24.vn[COLOR gold] (SĐT):[/COLOR]"/>
-		<setting id="passwordsctv" type="text" option="hidden" label="Mật khẩu tv24.vn:"/>
-	</category>
-</settings>

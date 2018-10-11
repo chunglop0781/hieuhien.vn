@@ -1,7 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<settings>
-	<category label="Thông tin Account">
-		<setting id="usernamesctv" type="text" label="Username [COLOR gold]SCTV[/COLOR] (SĐT)" default="0918778013"/>
-		<setting id="passwordsctv" type="text" option="hidden" label="Password [COLOR gold]SCTV[/COLOR]" default="hieuhien.vn"/>
-	</category>
-</settings>

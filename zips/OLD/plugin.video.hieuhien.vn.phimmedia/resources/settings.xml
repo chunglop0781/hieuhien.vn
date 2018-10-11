@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<settings>
-	<setting id="view_mode" type="enum" lvalues="30002|30003" label="30001" default="0"/>
-	<setting id="history" value="[]"/>
-</settings>

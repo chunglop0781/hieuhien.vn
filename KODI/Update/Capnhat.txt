@@ -1,5 +1,0 @@
-name="Update 13092018"
-url="https://dl.dropboxusercontent.com/s/c7q742eqtvogfq2/13092018.zip"
-img="special://home/addons/plugin.program.HieuHien.vn/media/capnhat.jpg"
-fanart="special://home/addons/plugin.program.HieuHien.vn/media/fanart.jpg"
-description="Cap nhat data cho KODI"

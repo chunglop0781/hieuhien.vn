@@ -1,6 +1,6 @@
 <settings>
 	<category label="Thông tin">
-		<setting id="Ufacebook" type="text" option="hidden" label="Email/SÐT"/>
+		<setting id="Ufacebook" type="text" label="Email/SÐT"/>
 		<setting id="Upassword" type="text" option="hidden" label="Password"/>
 		<setting id="cred" type="text" visible="False"/>
 		<setting id="hash" type="text" visible="False"/>

@@ -30,7 +30,8 @@ def allWithProgress(_in, _out, dp):
             count += 1
             update = count / nFiles * 100
             dp.update(int(update))
-            zin.extract(item, _out)
+            try:zin.extract(item, _out)
+            except:pass
     except Exception, e:
         print str(e)
         return False

@@ -1,6 +1,6 @@
 ####################################################################################
 #                          THANK!                                                  #
-# Addon nay duoc tong hop tu internet                                              #
+# Addon nay duoc tong hop tu internet - dua tren addon HieuITWizard                #
 # Tham khao code tu Addon raw.maintenance cua tac gia: Foreverska|Gombeek|Raw Media#
 # Tham khao code cua Addon usbwizard cua tac gia: LittleWiz                        #
 ####################################################################################
@@ -21,7 +21,7 @@ USER_AGENT = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/
 base       ='https://HieuHien.vn'
 ADDON      =xbmcaddon.Addon(id='plugin.program.HieuHien.vn')
 dialog     = xbmcgui.Dialog()    
-VERSION    = "1.3.2"
+VERSION    = "1.1.0"
 PATH       = "Kodi HieuHien.vn"            
 
 thumbnailPath = xbmc.translatePath('special://thumbnails');
@@ -246,7 +246,7 @@ def RESTORE():
     xbmc.executebuiltin("UpdateAddonRepos")
     #xbmc.executebuiltin('UnloadSkin()') 
     #xbmc.executebuiltin('ReloadSkin()')
-    #dialog.ok("[COLOR red][B]HieuHien.vn[/B][/COLOR]", "Khoi dong lai thiet bi neu Kodi khong thay doi", "","")
+    #dialog.ok("[COLOR red][B][COLOR lime][B]HieuHien.vn[/B][/COLOR][/B][/COLOR]", "Khoi dong lai thiet bi neu Kodi khong thay doi", "","")
     #xbmc.executebuiltin("LoadProfile(Master user)")
     killxbmc()	
 
@@ -416,7 +416,7 @@ def wizard(name,url,description):
     analytics.sendEvent("Kodi HieuHien.vn", "wizard")
     path = xbmc.translatePath(os.path.join('special://home/addons','packages'))
     #dp = xbmcgui.DialogProgress()
-    dp.create("[COLOR red][B]HieuIT[/B][/COLOR] [COLOR yellow][B]Wizard[/B][/COLOR]","[B]Dang tai file cai dat[/B]",'', "[B]Cho 1 chut nha!![/B]")
+    dp.create("Kodi HieuHien.vn","[B]Dang tai file cai dat[/B]",'', "[B]Cho 1 chut nha!![/B]")
     lib=os.path.join(path, name+'.zip')
     try:
        os.remove(lib)

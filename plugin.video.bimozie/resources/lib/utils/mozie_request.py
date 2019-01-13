@@ -4,18 +4,23 @@ import cookielib
 
 
 class Request:
-    DEFAULT_HEADERS = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64)'}
+    TIMEOUT = 15
+    DEFAULT_HEADERS = {
+        'User-Agent': 'Mozilla/5.0'
+    }
 
-    def __init__(self):
+    def __init__(self, header=None):
         self.cookies = cookielib.LWPCookieJar()
         self.handlers = (urllib2.HTTPHandler(), urllib2.HTTPSHandler(), urllib2.HTTPCookieProcessor(self.cookies))
         self.opener = urllib2.build_opener(*self.handlers)
+        if header:
+            self.DEFAULT_HEADERS = header
 
     def get(self, url):
         # try:
         print("Request URL: %s" % url)
         request = urllib2.Request(url, headers=self.DEFAULT_HEADERS)
-        response = urllib2.urlopen(request)
+        response = urllib2.urlopen(request, timeout=self.TIMEOUT)
         content = response.read()
         response.close()
         return content

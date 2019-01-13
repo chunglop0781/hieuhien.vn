@@ -53,11 +53,26 @@ SITES = [{
     'version': 1
 }, {
     'name': 'phimbathu.org',
-    'logo': 'http://media.phimbathu.com/images/logo.png',
+    'logo': 'http://phimbathu.org/Theme/images/phimbathu-logo.png',
     'class': 'Phimbathu',
     'plugin': 'phimbathu.plugin',
     'version': 1
-}]
+},
+    {
+        'name': 'kenh88.com',
+        'logo': 'http://www.kenh88.com/images/logo_kenh88.png',
+        'class': 'Kenh88',
+        'plugin': 'kenh88.plugin',
+        'version': 1
+    },
+    {
+        'name': 'phim14.net',
+        'logo': 'http://phim14.net/application/views/frontend/default/images/logo.png',
+        'class': 'Phim14',
+        'plugin': 'phim14.plugin',
+        'version': 1
+    },
+]
 
 addon_data_dir = os.path.join(xbmc.translatePath('special://userdata/addon_data').decode('utf-8'), ADDON_ID)
 if not os.path.exists(addon_data_dir):
@@ -87,7 +102,7 @@ def onInit():
 
 
 def list_category(cats, module, classname):
-    xbmcplugin.setPluginCategory(HANDLE, 'Categories')
+    xbmcplugin.setPluginCategory(HANDLE, classname)
     xbmcplugin.setContent(HANDLE, 'files')
 
     # show search link
@@ -108,7 +123,7 @@ def list_category(cats, module, classname):
 
 
 def list_movie(movies, link, page, module, classname):
-    xbmcplugin.setPluginCategory(HANDLE, 'Categories')
+    xbmcplugin.setPluginCategory(HANDLE, classname)
     xbmcplugin.setContent(HANDLE, 'movies')
 
     if movies is not None:
@@ -140,27 +155,45 @@ def list_movie(movies, link, page, module, classname):
     xbmcplugin.endOfDirectory(HANDLE)
 
 
-def show_episode(movie, thumb, title, module, classname):
+def show_episode(movie, thumb, title, module, class_name):
     if len(movie['episode']) > 0:
         for item in movie['episode']:
-            list_item = xbmcgui.ListItem(label=item['title'])
-            list_item.setIconImage('DefaultVideo.png')
-            list_item.setArt({'thumb': thumb})
-            url = build_url({'mode': 'links', 'title': title, 'thumb': thumb, 'url': item['link'], 'module': module,
-                             'class': classname})
-            xbmcplugin.addDirectoryItem(HANDLE, url, list_item, isFolder=True)
+            li = xbmcgui.ListItem(label=item['title'])
+            li.setInfo('video', {'title': item['title']})
+            li.setProperty('fanart_image', thumb)
+            li.setArt({'thumb': thumb})
+            url = build_url({'mode': 'play',
+                             'title': title,
+                             'thumb': thumb,
+                             'url': item['link'],
+                             'direct': 0,
+                             'module': module,
+                             'class': class_name})
+            li.setProperty("IsPlayable", "true")
+            xbmcplugin.addDirectoryItem(HANDLE, url, li, isFolder=True)
 
     elif len(movie['group']) > 0:
+        idx=0
         for key, items in movie['group'].iteritems():
-            xbmcplugin.addDirectoryItem(HANDLE, None,
-                                        xbmcgui.ListItem(label="[COLOR red][B] [---- %s ----] [/B][/COLOR]" % key),
-                                        False)
-            for item in items:
-                li = xbmcgui.ListItem(label=item['title'])
-                li.setArt({'thumb': thumb})
-                url = build_url({'mode': 'links', 'title': title, 'thumb': thumb, 'url': item['link'], 'module': module,
-                                 'class': classname})
-                xbmcplugin.addDirectoryItem(HANDLE, url, li, isFolder=True)
+            idx += 1
+            print(idx, idx is len(movie['group']))
+            label = "[COLOR red][B][---- %s : [COLOR yellow]%d eps[/COLOR] ----][/B][/COLOR]" % (key, len(items))
+            sli = xbmcgui.ListItem(label=label)
+            if len(items) < 2 or len(movie['group']) == 1:
+                xbmcplugin.addDirectoryItem(HANDLE, None, sli, isFolder=False)
+                _build_ep_list(items, title, thumb, module, class_name)
+            elif idx is len(movie['group']):
+                xbmcplugin.addDirectoryItem(HANDLE, None, sli, isFolder=False)
+                _build_ep_list(items, title, thumb, module, class_name)
+            else:
+                url = build_url({'mode': 'server',
+                                 'title': title,
+                                 'server': key,
+                                 'thumb': thumb,
+                                 'items': json.dumps(items),
+                                 'module': module,
+                                 'class': class_name})
+                xbmcplugin.addDirectoryItem(HANDLE, url, sli, isFolder=True)
     else:
         return
 
@@ -169,52 +202,77 @@ def show_episode(movie, thumb, title, module, classname):
     xbmcplugin.endOfDirectory(HANDLE)
 
 
-def show_links(movie, title, thumb, module, classname):
+def _build_ep_list(items, title, thumb, module, class_name):
+    for item in items:
+        li = xbmcgui.ListItem(label=item['title'])
+        li.setInfo('video', {'title': item['title']})
+        li.setProperty('fanart_image', thumb)
+        li.setArt({'thumb': thumb})
+
+        url = build_url({'mode': 'play',
+                         'title': title,
+                         'thumb': thumb,
+                         'url': item['link'],
+                         'direct': 0,
+                         'module': module,
+                         'class': class_name})
+        li.setProperty("IsPlayable", "true")
+        xbmcplugin.addDirectoryItem(HANDLE, url, li, isFolder=False)
+
+
+def show_server_links(items, title, thumb, server, module, class_name):
+    xbmcplugin.setPluginCategory(HANDLE, "%s - %s " % (title, server))
+    xbmcplugin.setContent(HANDLE, 'videos')
+
+    label = "[COLOR red][B][---- %s : [COLOR yellow]%d eps[/COLOR] ----][/B][/COLOR]" % (server, len(items))
+    sli = xbmcgui.ListItem(label=label)
+    xbmcplugin.addDirectoryItem(HANDLE, None, sli, isFolder=False)
+    _build_ep_list(items, title, thumb, module, class_name)
+    xbmcplugin.endOfDirectory(HANDLE)
+
+def show_links(movie, title, thumb, module, class_name):
     if len(movie['links']) == 0:
         return
-    elif len(movie['links']) == 1:
-        title = "%s - %s" % (movie['links'][0]['title'], title)
-        resolvable = 'resolvable' in movie['links'][0] and movie['links'][0]['resolvable'] or True
-        return play_video(path=movie['links'][0]['link'], resolvable=resolvable, title=title, thumb=thumb)
 
     print("***********************Found Total Link %d" % len(movie['links']))
     xbmcplugin.setPluginCategory(HANDLE, title)
     xbmcplugin.setContent(HANDLE, 'movies')
     for item in movie['links']:
-        list_item = xbmcgui.ListItem(label=item['title'])
-        list_item.setIconImage('DefaultVideo.png')
-        list_item.setArt({'thumb': thumb})
+        li = xbmcgui.ListItem(label=item['title'])
+        li.setInfo('video', {'title': item['title']})
+        li.setProperty('fanart_image', thumb)
+        li.setArt({'thumb': thumb})
         title = "%s - %s" % (item['title'], title)
-        resolvable = 'resolvable' in item and item['resolvable'] or True
-        url = build_url({'mode': 'play', 'url': item['link'], 'title': title,
-                         'thumb': thumb, 'resolvable': resolvable,
-                         'module': module, 'class': classname})
-        xbmcplugin.addDirectoryItem(HANDLE, url, list_item, False)
+        url = build_url({'mode': 'play',
+                         'title': title,
+                         'thumb': thumb,
+                         'url': item['link'],
+                         'direct': 1,
+                         'module': module,
+                         'class': class_name})
+        li.setProperty("IsPlayable", "true")
+        xbmcplugin.addDirectoryItem(HANDLE, url, li, False)
 
     xbmcplugin.endOfDirectory(HANDLE)
 
 
-def play_video(path, resolvable=True, title=None, thumb=None):
-    # dialog = xbmcgui.Dialog()
-    # duration = 5000  # in milliseconds
-    play_item = xbmcgui.ListItem(path=path)
+def play(movie, title=None, thumb=None, direct=False):
+    print("*********************** playing ")
+    print(movie)
+    if direct:
+        play_item = xbmcgui.ListItem(path=movie)
+    else:
+        if len(movie['links']) == 0:
+            return
+        else:
+            movie = movie['links'][0]
+            play_item = xbmcgui.ListItem(path=movie['link'])
+            title = "%s - %s" % (movie['title'], title)
+
     play_item.setLabel(title)
     play_item.setArt({'thumb': thumb})
-    stream_url = None
-    if resolvable:
-        import urlresolver
-        stream_url = urlresolver.HostedMediaFile(url=path).resolve()
-
-    if not stream_url:
-        print("*********************** Play stream %s " % path)
-        xbmc.Player().play(path, play_item)
-    else:
-        print("*********************** Play stream %s " % stream_url)
-        play_item.setPath(stream_url)
-        # dialog.notification("URL Resolver", "Playing video", xbmcgui.NOTIFICATION_INFO, duration)
-        xbmc.Player().play(stream_url, play_item)
-
-    # xbmcplugin.setResolvedUrl(HANDLE, True, listitem=play_item)
+    play_item.setProperty('IsPlayable', 'true')
+    xbmcplugin.setResolvedUrl(HANDLE, True, listitem=play_item)
 
 
 def dosearch(plugin, module, classname, text, page=1):
@@ -304,6 +362,13 @@ def router():
         else:
             show_links(movie, title, thumb, module, classname)
 
+    elif mode[0] == 'server':
+        thumb = ARGS.get('thumb')[0]
+        title = ARGS.get('title')[0]
+        server = ARGS.get('server')[0]
+        items = json.loads(ARGS.get('items')[0])
+        show_server_links(items, title, thumb, server, module, classname)
+
     elif mode[0] == 'links':
         url = ARGS.get('url')[0]
         title = ARGS.get('title')[0]
@@ -313,11 +378,16 @@ def router():
         show_links(movie, title, thumb, module, classname)
 
     elif mode[0] == 'play':
-        path = ARGS.get('url')[0]
+        print("*********************** Play movie")
+        url = ARGS.get('url')[0]
         title = ARGS.get('title')[0]
         thumb = ARGS.get('thumb')[0]
-        resolvable = ARGS.get('resolvable')[0]
-        play_video(path, resolvable, title, thumb)
+        direct = int(ARGS.get('direct')[0])
+        if direct is 0:
+            movie = instance().getLink(url)
+        else:
+            movie = url
+        play(movie, title, thumb, direct)
 
     elif mode[0] == 'search':
         search(module, classname)

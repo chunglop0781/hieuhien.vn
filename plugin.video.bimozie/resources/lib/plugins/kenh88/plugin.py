@@ -1,12 +1,12 @@
 import urllib
 from utils.mozie_request import Request
-from tvhay.parser.category import Parser as Category
-from tvhay.parser.channel import Parser as Channel
-from tvhay.parser.movie import Parser as Movie
+from kenh88.parser.category import Parser as Category
+from kenh88.parser.channel import Parser as Channel
+from kenh88.parser.movie import Parser as Movie
 
 
-class Tvhay:
-    domain = "http://tvhay.org/"
+class Kenh88:
+    domain = "http://www.kenh88.com"
 
     def getCategory(self):
         response = Request().get(self.domain)
@@ -19,18 +19,19 @@ class Tvhay:
         else:
             url = '%s%s' % (self.domain, channel)
         response = Request().get(url)
-        return Channel().get(response, page)
+        return Channel().get(response, page, self.domain)
 
     def getMovie(self, id):
-        url = Movie().get_movie_link(Request().get(id))
+        url = '%s%s' % (self.domain, id.replace('/phim/', '/xem-phim-online/'))
         response = Request().get(url)
         return Movie().get(response)
 
     def getLink(self, url):
+        url = '%s%s' % (self.domain, url)
         response = Request().get(url)
         return Movie().get_link(response)
 
     def search(self, text):
-        url = "%ssearch/%s" % (self.domain, urllib.quote_plus(text))
+        url = "%s/film/search?keyword=%s" % (self.domain, urllib.quote_plus(text))
         response = Request().get(url)
-        return Channel().get(response, 1)
+        return Channel().get(response, 1, self.domain)

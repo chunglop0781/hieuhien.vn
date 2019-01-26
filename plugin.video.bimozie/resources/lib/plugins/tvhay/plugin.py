@@ -15,7 +15,7 @@ class Tvhay:
     def getChannel(self, channel, page=1):
         channel = channel.replace(self.domain, "")
         if page > 1:
-            url = '%s%s/page/%d' % (self.domain, channel, page)
+            url = '%s%spage/%d' % (self.domain, channel, page)
         else:
             url = '%s%s' % (self.domain, channel)
         response = Request().get(url)
@@ -26,8 +26,8 @@ class Tvhay:
         response = Request().get(url)
         return Movie().get(response)
 
-    def getLink(self, url):
-        response = Request().get(url)
+    def getLink(self, movie):
+        response = Request().get(movie['link'])
         return Movie().get_link(response)
 
     def search(self, text):

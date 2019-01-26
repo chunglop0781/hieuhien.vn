@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 from utils.mozie_request import Request
+import utils.xbmc_helper as helper
+from utils.fshare import FShare
 import re
-import urllib
 import HTMLParser
 import json
 
@@ -38,18 +39,18 @@ class LinkParser:
             return self.get_link_ok()
         if re.search('openload.co', self.url):
             return self.get_link_openload()
+        if re.search('fshare.vn', self.url):
+            return self.get_link_fshare()
+        if re.search('dailymotion.com', self.url):
+            return self.get_link_dailymotion()
 
         return self.url
 
     def get_link_ok(self):
-        response = Request({
-            'referer': 'http://tvhay.org',
-            'User-Agent': 'Mozilla/5.0'
-        }).get(self.url)
+        response = Request().get(self.url)
         m = re.search('data-options="(.+?)"', response)
         h = HTMLParser.HTMLParser()
         s = m.group(1)
-        s = unicode(s, 'utf-8')
         s = h.unescape(s)
         s = json.loads(s)
         s = json.loads(s['flashvars']['metadata'])
@@ -61,7 +62,24 @@ class LinkParser:
         try:
             import resolveurl
             stream_url = resolveurl.resolve(self.url)
-            print(stream_url)
             return stream_url, '720'
         except:
             return None
+
+    def get_link_dailymotion(self):
+        try:
+            import resolveurl
+            stream_url = resolveurl.resolve(self.url)
+            return stream_url, '720'
+        except:
+            return None
+
+    def get_link_fshare(self):
+        if helper.getSetting('fshare.enable'):
+            return FShare(
+                self.url,
+                helper.getSetting('fshare.username'),
+                helper.getSetting('fshare.password')
+            ).get_link(), '1080'
+        else:
+            return FShare(self.url).get_link(), '1080'

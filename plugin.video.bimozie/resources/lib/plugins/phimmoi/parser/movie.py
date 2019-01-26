@@ -1,4 +1,4 @@
-# coding: utf8
+# -*- coding: utf-8 -*-
 from bs4 import BeautifulSoup
 from utils.mozie_request import Request
 from utils.aes import CryptoAES
@@ -51,7 +51,8 @@ class Parser:
                 movie['links'].append({
                     'link': url,
                     'title': 'Link %s' % item['resolution'],
-                    'type': item['resolution']
+                    'type': item['resolution'],
+                    'resolve': True
                 })
 
         return movie

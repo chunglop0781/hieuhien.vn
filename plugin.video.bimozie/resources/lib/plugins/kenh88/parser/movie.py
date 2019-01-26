@@ -1,10 +1,9 @@
-# coding: utf8
+# -*- coding: utf-8 -*-
 import re
 import json
 import urllib
 from bs4 import BeautifulSoup
 from utils.mozie_request import Request
-from utils.link_parser import LinkParser
 
 
 def from_char_code(*args):
@@ -48,7 +47,7 @@ class Parser:
                 'link': source['link'],
                 'title': 'Link',
                 'type': '',
-                'resolvable': False
+                'resolve': True
             })
             return movie
 
@@ -61,19 +60,19 @@ class Parser:
                     'link': source['file'],
                     'title': 'Link %s' % source['label'].encode('utf-8'),
                     'type': source['label'].encode('utf-8'),
-                    'resolvable': False
+                    'resolve': True
                 })
             return movie
 
         sources = re.search('<iframe.*src=(".*?")', response)
         if sources is not None:
-            source = LinkParser(sources.group(1).replace('"', '')).get_link()
+            source = sources.group(1).replace('"', '')
             if source:
                 movie['links'].append({
-                    'link': source[0],
-                    'title': 'Link %s' % source[1].encode('utf-8'),
-                    'type': source[1].encode('utf-8'),
-                    'resolvable': False
+                    'link': source,
+                    'title': 'Link %s' % source,
+                    'type': 'Unknow',
+                    'resolve': False
                 })
                 return movie
 
@@ -86,7 +85,7 @@ class Parser:
                     'link': source['file'],
                     'title': 'Link %s' % 'Auto',
                     'type': 'Auto',
-                    'resolvable': False
+                    'resolve': True
                 })
                 return movie
 

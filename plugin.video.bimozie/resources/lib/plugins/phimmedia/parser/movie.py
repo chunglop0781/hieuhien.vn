@@ -1,4 +1,4 @@
-# coding: utf8
+# -*- coding: utf-8 -*-
 from bs4 import BeautifulSoup
 import re
 import base64
@@ -35,7 +35,8 @@ class Parser:
                     movie['links'].append({
                         'link': link,
                         'title': 'Link %sp' % source[1],
-                        'type': source[1]
+                        'type': source[1],
+                        'resolve': True
                     })
                     if source[1] >= 720: break
         return movie

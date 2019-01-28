@@ -35,8 +35,8 @@
 	</extension>
 	<extension point="xbmc.addon.metadata">
 		<summary lang="en">Install addon from Hieuhien.vn's repository</summary>
-		<description lang="en">[COLOR red][B]Hieuhien.vn[/COLOR]-[COLOR lime]Repository tập hợp các addon và repository giải trí online trên XBMC - Kodi[/B][/COLOR]</description>
-		<disclaimer lang="en">Mọi nội dung được lấy từ Internet vì vậy chúng tôi không chịu trách nhiệm về chất lượng cũng như sự ổn định</disclaimer>
+		<description lang="en">[COLOR red][B]Hieuhien.vn[/COLOR]-[COLOR lime]Repository tap hop cac addon va repository XBMC - Kodi[/B][/COLOR]</description>
+		<disclaimer lang="en">Moi noi dung duoc chia se tren mang Internet, HieuHien.vn khong quan ly va chiu trach nhiem ve nhung noi dung nay, quyen su dung thuoc ve nguoi dung!</disclaimer>
 		<email>hotro.hieuhien.vn@gmail.com</email>
 		<platform>all</platform>
 	</extension>

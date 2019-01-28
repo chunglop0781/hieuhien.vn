@@ -309,7 +309,7 @@ Update Full
   </extension>
 </addon>
 
-<addon id="repository.hieuhien.vn" version="1.0.2.2" name="[B][COLOR lime]Hieuhien.vn Repository[/COLOR][/B]" provider-name="Hieuhien.vn">
+<addon id="repository.hieuhien.vn" version="1.0.2.3" name="[B][COLOR lime]Hieuhien.vn Repository[/COLOR][/B]" provider-name="Hieuhien.vn">
 	<requires>
 		<import addon="xbmc.addon" version="12.0.0"/>
 	</requires>

@@ -24,19 +24,19 @@ tmp = xbmc.translatePath('special://temp')
 addons_folder = xbmc.translatePath('special://home/addons')
 image = xbmc.translatePath(os.path.join(path, "icon.png"))
 
-plugin = Plugin()
+plugin         = Plugin()
 addon          = xbmcaddon.Addon("plugin.video.HieuHien.vn")
 pluginrootpath = "plugin://plugin.video.HieuHien.vn"
-http = httplib2.Http(cache, disable_ssl_certificate_validation=True)
-query_url = "https://docs.google.com/spreadsheets/d/{sid}/gviz/tq?gid={gid}&headers=1&tq={tq}"
-sheet_headers = {
-	"User-Agent": "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.3; WOW64; Trident/7.0)",
-	"Accept-Encoding": "gzip, deflate, sdch"
+http           = httplib2.Http(cache, disable_ssl_certificate_validation=True)
+query_url      = "https://docs.google.com/spreadsheets/d/{sid}/gviz/tq?gid={gid}&headers=1&tq={tq}"
+sheet_headers  = {
+	"User-Agent"      : "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.3; WOW64; Trident/7.0)",
+	"Accept-Encoding" : "gzip, deflate, sdch, br"
 }
 
 
 def GetSheetIDFromSettings():
-	sid = "1rFom1XNieCQAmmhNR7t-JyRDushJWC3qkMfZ5oQnBgM"
+	sid = "1CzW6m07TdutoBZ1azkvpTsDd1fyjc3p-2u4Zs-OYBfc"
 	resp, content = http.request(get_fshare_setting("GSheetURL"), "HEAD")
 	try:
 		sid = re.compile("/d/(.+?)/").findall(resp["content-location"])[0]
@@ -155,6 +155,7 @@ def getItems(url_path="0", tq="select A,B,C,D,E"):
 	)
 	_re = "google.visualization.Query.setResponse\((.+)\);"
 	_json = json.loads(re.compile(_re).findall(content)[0])
+
 	items = []
 	for row in _json["table"]["rows"]:
 		item = {}
@@ -179,7 +180,7 @@ def getItems(url_path="0", tq="select A,B,C,D,E"):
 				item["is_playable"] = False
 			elif re.search("plugin.video.HieuHien.vn/(.+?)/.+?\://", item["path"]):
 				match = re.search(
-				match = re.search("plugin.video.HieuHien.vn(/.+?/).+?\://", item["path"])
+					"plugin.video.HieuHien.vn(/.+?/).+?\://", item["path"])
 				tmp = item["path"].split(match.group(1))
 				tmp[-1] = urllib.quote_plus(tmp[-1])
 				item["path"] = match.group(1).join(tmp)
@@ -248,6 +249,7 @@ def getItems(url_path="0", tq="select A,B,C,D,E"):
 			else:		
 				# Nếu là direct link thì route đến hàm play_url
 				item["is_playable"] = True
+				item["info"] = {"type": "video"}
 				item["path"] = pluginrootpath + "/play/" + urllib.quote_plus(item["path"])
 		if item["label2"].startswith("http"):
 			item["path"] += "?sub=" + urllib.quote_plus(item["label2"].encode("utf8"))
@@ -643,8 +645,8 @@ def InstallRepo(path="0", tracking_string=""):
 			dlg.ok('Chú ý: Không cài đủ repo!', s)
 		else:
 			dlg = xbmcgui.Dialog()
-			s = "Đã cập nhật thành công\n%s" % "\n".join(installed)
-			dlg.ok('Cập nhật xong!', s)
+			s = "Tất cả repo đã được cài thành công\n%s" % "\n".join(installed)
+			dlg.ok('Cài Repo thành công!', s)
 
 	else:  # cài repo riêng lẻ
 		try:
@@ -1089,8 +1091,8 @@ def get_fshare_setting(s):
 def GetFShareCred():
 	try:
 		_hash = get_fshare_setting("hash")
-		uname = get_fshare_setting("Ufacebook")
-		pword = get_fshare_setting("Upassword")
+		uname = get_fshare_setting("usernamefshare")
+		pword = get_fshare_setting("passwordfshare")
 		if _hash != (uname+pword): 
 			plugin.set_setting("cred","")
 		cred  = json.loads(get_fshare_setting("cred"))
@@ -1099,8 +1101,8 @@ def GetFShareCred():
 		return cred
 	except:
 		try:
-			uname = get_fshare_setting("Ufacebook")
-			pword = get_fshare_setting("Upassword")
+			uname = get_fshare_setting("usernamefshare")
+			pword = get_fshare_setting("passwordfshare")
 			cred = LoginFShare(uname,pword)
 			user = GetFShareUser(cred)
 			LoginOKNoti(user["email"], user["level"])
@@ -1122,7 +1124,7 @@ def GetFShareCred():
 def LoginOKNoti(user="",lvl=""):
 	header = "[COLOR red]HieuHien.vn [/COLOR][COLOR lime]chúc bạn xem phim vui vẻ![/COLOR]"
 	message = "[COLOR blue][B]facebook.com/HieuHien.vn[/B][/COLOR]"
-	xbmc.executebuiltin('Notification("{}", "{}", "{}", "")'.format(header, message, "10000"))
+	xbmc.executebuiltin('Notification("{}", "{}","{}", "")'.format(header, message, "10000"))
 
 
 def GetFShareUser(cred):
@@ -1168,7 +1170,7 @@ def GA(title="Home", page="/"):
 		client_id = open(cid_path).read()
 		data = {
 			'v': '1',
-			'tid' : 'UA-89364622-1', #Thay GA id của bạn ở đây
+			'tid': 'UA-89364622-1',  # Thay GA id của bạn ở đây
 			'cid': client_id,
 			't': 'pageview',
 			'dp': "VNPlaylist%s" % page,

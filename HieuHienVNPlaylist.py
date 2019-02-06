@@ -25,7 +25,7 @@ addons_folder = xbmc.translatePath('special://home/addons')
 image = xbmc.translatePath(os.path.join(path, "icon.png"))
 
 plugin = Plugin()
-addon = xbmcaddon.Addon("plugin.video.HieuHien.vn")
+addon          = xbmcaddon.Addon("plugin.video.HieuHien.vn")
 pluginrootpath = "plugin://plugin.video.HieuHien.vn"
 http = httplib2.Http(cache, disable_ssl_certificate_validation=True)
 query_url = "https://docs.google.com/spreadsheets/d/{sid}/gviz/tq?gid={gid}&headers=1&tq={tq}"
@@ -155,7 +155,6 @@ def getItems(url_path="0", tq="select A,B,C,D,E"):
 	)
 	_re = "google.visualization.Query.setResponse\((.+)\);"
 	_json = json.loads(re.compile(_re).findall(content)[0])
-
 	items = []
 	for row in _json["table"]["rows"]:
 		item = {}
@@ -180,7 +179,7 @@ def getItems(url_path="0", tq="select A,B,C,D,E"):
 				item["is_playable"] = False
 			elif re.search("plugin.video.HieuHien.vn/(.+?)/.+?\://", item["path"]):
 				match = re.search(
-					"plugin.video.HieuHien.vn(/.+?/).+?\://", item["path"])
+				match = re.search("plugin.video.HieuHien.vn(/.+?/).+?\://", item["path"])
 				tmp = item["path"].split(match.group(1))
 				tmp[-1] = urllib.quote_plus(tmp[-1])
 				item["path"] = match.group(1).join(tmp)
@@ -246,20 +245,9 @@ def getItems(url_path="0", tq="select A,B,C,D,E"):
 				# https://www.youtube.com/playlist?list=PLFgquLnL59alCl_2TQvOiD5Vgm1hCaGSI
 				yt_pid = re.compile("list=(.+?)$").findall(item["path"])[0]
 				item["path"] = "plugin://plugin.video.youtube/playlist/%s/" % yt_pid
-			elif any(ext in item["path"] for ext in [".png", ".jpg", ".bmp", ".jpeg"]):
-				item["path"] = "plugin://plugin.video.kodi4vn.launcher/showimage/%s/" % urllib.quote_plus(
-					item["path"])
-			elif re.search("\.ts$", item["path"]):
-				item["path"] = "plugin://plugin.video.f4mTester/?url=%s&streamtype=TSDOWNLOADER&use_proxy_for_chunks=True&name=%s" % (
-					urllib.quote(item["path"]),
-					urllib.quote_plus(item["label"])
-				)
-				item["path"] = pluginrootpath + \
-					"/executebuiltin/" + urllib.quote_plus(item["path"])
 			else:		
 				# Nếu là direct link thì route đến hàm play_url
 				item["is_playable"] = True
-				item["info"] = {"type": "video"}
 				item["path"] = pluginrootpath + "/play/" + urllib.quote_plus(item["path"])
 		if item["label2"].startswith("http"):
 			item["path"] += "?sub=" + urllib.quote_plus(item["label2"].encode("utf8"))
@@ -271,7 +259,10 @@ def getItems(url_path="0", tq="select A,B,C,D,E"):
 			],
 			"label": "[COLOR yellow]*** Thêm Playlist ***[/COLOR]",
 			"path": "%s/add-playlist" % (pluginrootpath),
-			"thumbnail": "http://1.bp.blogspot.com/-gc1x9VtxIg0/VbggLVxszWI/AAAAAAAAANo/Msz5Wu0wN4E/s1600/playlist-advertorial.png"
+			"thumbnail": "http://1.bp.blogspot.com/-gc1x9VtxIg0/VbggLVxszWI/AAAAAAAAANo/Msz5Wu0wN4E/s1600/playlist-advertorial.png",
+			"is_playable": True,
+			"info": {"type": "video"}
+
 		}
 		items += [add_playlist_item]
 		playlists = plugin.get_storage('playlists')
@@ -652,8 +643,8 @@ def InstallRepo(path="0", tracking_string=""):
 			dlg.ok('Chú ý: Không cài đủ repo!', s)
 		else:
 			dlg = xbmcgui.Dialog()
-			s = "Tất cả repo đã được cài thành công\n%s" % "\n".join(installed)
-			dlg.ok('Cài Repo thành công!', s)
+			s = "Đã cập nhật thành công\n%s" % "\n".join(installed)
+			dlg.ok('Cập nhật xong!', s)
 
 	else:  # cài repo riêng lẻ
 		try:
@@ -740,7 +731,7 @@ def AddTracking(items):
 	'''
 
 	for item in items:
-		if "plugin.video.thongld.vnplaylist" in item["path"]:
+		if "plugin.video.HieuHien.vn" in item["path"]:
 			tmps = item["path"].split("?")
 			if len(tmps) == 1:
 				tail = ""
@@ -1177,7 +1168,7 @@ def GA(title="Home", page="/"):
 		client_id = open(cid_path).read()
 		data = {
 			'v': '1',
-			'tid': 'UA-89364622-1',  # Thay GA id của bạn ở đây
+			'tid' : 'UA-89364622-1', #Thay GA id của bạn ở đây
 			'cid': client_id,
 			't': 'pageview',
 			'dp': "VNPlaylist%s" % page,

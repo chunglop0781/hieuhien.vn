@@ -12,6 +12,7 @@ import random
 import base64
 import time
 import thread
+import socket
 from datetime import datetime
 # Tham khảo xbmcswift2 framework cho kodi addon tại
 # http://xbmcswift2.readthedocs.io/en/latest/
@@ -36,7 +37,7 @@ sheet_headers = {
 
 def GetSheetIDFromSettings():
 	sid = "1rFom1XNieCQAmmhNR7t-JyRDushJWC3qkMfZ5oQnBgM"
-	resp, content = http.request(plugin.get_setting("GSheetURL"), "HEAD")
+	resp, content = http.request(get_fshare_setting("GSheetURL"), "HEAD")
 	try:
 		sid = re.compile("/d/(.+?)/").findall(resp["content-location"])[0]
 	except:
@@ -152,7 +153,7 @@ def getItems(url_path="0", tq="select A,B,C,D,E"):
 		url, "GET",
 		headers=sheet_headers
 	)
-	_re = "google.visualization.Query.setResponse\((.+?)\);"
+	_re = "google.visualization.Query.setResponse\((.+)\);"
 	_json = json.loads(re.compile(_re).findall(content)[0])
 
 	items = []
@@ -739,7 +740,7 @@ def AddTracking(items):
 	'''
 
 	for item in items:
-		if "plugin.video.HieuHien.vn" in item["path"]:
+		if "plugin.video.thongld.vnplaylist" in item["path"]:
 			tmps = item["path"].split("?")
 			if len(tmps) == 1:
 				tail = ""
@@ -1033,18 +1034,26 @@ def get_playable_url(url):
 				}
 
 				(resp, content) = http.request(
-					"https://api2.fshare.vn/api/session/download", "POST",
+					"https://118.69.164.19/api/session/download", "POST",
 					body=json.dumps(data),
 					headers=fshare_headers
 				)
+				url = json.loads(content)["location"]
+				url = convert_ipv4_url(url)
 				if resp.status == 404:
-					history = plugin.get_storage('history')
 					header = "Không lấy được link FShare VIP!"
 					message = "Link không tồn tại hoặc file đã bị xóa"
 					xbmc.executebuiltin('Notification("%s", "%s", "%d", "%s")' % (header, message, 10000, ''))
 					return None
-				else:
-					return json.loads(content)["location"]
+				(resp, content) = http.request(
+					url, "HEAD"
+				)
+				if '/ERROR' in resp['content-location']:
+					header = "Không lấy được link FShare VIP!"
+					message = "Link không tồn tại hoặc file đã bị xóa"
+					xbmc.executebuiltin('Notification("%s", "%s", "%d", "%s")' % (header, message, 10000, ''))
+					return None
+				return url
 			return None
 		except:	pass
 	elif "tv24.vn" in url:
@@ -1058,11 +1067,22 @@ def get_playable_url(url):
 			url = None
 	return url
 
-def LoginFShare(uname,pword):
-	login_uri = "https://api2.fshare.vn/api/user/login"
-	data = '{"app_key" : "L2S7R6ZMagggC5wWkQhX2+aDi467PPuftWUMRFSn", "user_email" : "%s", "password" : "%s"}' % (uname, pword)
+def convert_ipv4_url(url):
+	host = re.search('//(.+?)(/|\:)', url).group(1)
+	addrs = socket.getaddrinfo(host,443)
+	ipv4_addrs = [addr[4][0] for addr in addrs if addr[0] == socket.AF_INET]
+	url = url.replace(host, ipv4_addrs[0])
+	return url
 
-	resp, cont = http.request(login_uri, "POST", body=data)
+def LoginFShare(uname,pword):
+	login_uri = "https://118.69.164.19/api/user/login"
+	login_uri = convert_ipv4_url(login_uri)
+	fshare_headers = {
+		"User-Agent": "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36",
+		"Accept-Encoding": "gzip, deflate, sdch"
+	}
+	data = '{"app_key": "L2S7R6ZMagggC5wWkQhX2+aDi467PPuftWUMRFSn","user_email": "%s","password": "%s"}' % (uname, pword)
+	resp, cont = http.request(login_uri, "POST", headers=fshare_headers, body=data)
 	if "token" in cont and "session_id" in cont:
 		plugin.set_setting("cred",cont)
 		plugin.set_setting("hash",uname+pword)
@@ -1070,22 +1090,26 @@ def LoginFShare(uname,pword):
 		return _json
 	else: return None
 
+def get_fshare_setting(s):
+	try:
+		return plugin.get_setting(s)
+	except: return ""
 
 def GetFShareCred():
 	try:
-		_hash = plugin.get_setting("hash")
-		uname = plugin.get_setting("Ufacebook")
-		pword = plugin.get_setting("Upassword")
+		_hash = get_fshare_setting("hash")
+		uname = get_fshare_setting("Ufacebook")
+		pword = get_fshare_setting("Upassword")
 		if _hash != (uname+pword): 
 			plugin.set_setting("cred","")
-		cred  = json.loads(plugin.get_setting("cred"))
+		cred  = json.loads(get_fshare_setting("cred"))
 		user = GetFShareUser(cred)
 		LoginOKNoti(user["email"], user["level"])
 		return cred
 	except:
 		try:
-			uname = plugin.get_setting("Ufacebook")
-			pword = plugin.get_setting("Upassword")
+			uname = get_fshare_setting("Ufacebook")
+			pword = get_fshare_setting("Upassword")
 			cred = LoginFShare(uname,pword)
 			user = GetFShareUser(cred)
 			LoginOKNoti(user["email"], user["level"])
@@ -1111,7 +1135,7 @@ def LoginOKNoti(user="",lvl=""):
 
 
 def GetFShareUser(cred):
-	user_url = "https://api2.fshare.vn/api/user/get"
+	user_url = "https://118.69.164.19/api/user/get"
 	headers = {
 		"Cookie": "session_id=" + cred["session_id"]
 	}

@@ -24,14 +24,14 @@ tmp = xbmc.translatePath('special://temp')
 addons_folder = xbmc.translatePath('special://home/addons')
 image = xbmc.translatePath(os.path.join(path, "icon.png"))
 
-plugin         = Plugin()
+plugin = Plugin()
 addon          = xbmcaddon.Addon("plugin.video.HieuHien.vn")
 pluginrootpath = "plugin://plugin.video.HieuHien.vn"
-http           = httplib2.Http(cache, disable_ssl_certificate_validation=True)
-query_url      = "https://docs.google.com/spreadsheets/d/{sid}/gviz/tq?gid={gid}&headers=1&tq={tq}"
-sheet_headers  = {
-	"User-Agent"      : "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.3; WOW64; Trident/7.0)",
-	"Accept-Encoding" : "gzip, deflate, sdch, br"
+http = httplib2.Http(cache, disable_ssl_certificate_validation=True)
+query_url = "https://docs.google.com/spreadsheets/d/{sid}/gviz/tq?gid={gid}&headers=1&tq={tq}"
+sheet_headers = {
+	"User-Agent": "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.3; WOW64; Trident/7.0)",
+	"Accept-Encoding": "gzip, deflate, sdch"
 }
 
 
@@ -491,8 +491,11 @@ def FShare(path="0", tracking_string="FShare"):
 		folder_id, page)
 	(resp, content) = http.request(
 		fshare_folder_api, "GET",
-		headers={"Accept": "application/json, text/plain, */*",
-                    "Accept-Encoding": "gzip, deflate, sdch, br"}
+		headers={
+			"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.109 Safari/537.36",
+			"Accept": "application/json, text/plain, */*",
+			"Accept-Encoding": "gzip, deflate, sdch, br"
+		}
 	)
 	items = []
 	fshare_items = json.loads(content)["items"]

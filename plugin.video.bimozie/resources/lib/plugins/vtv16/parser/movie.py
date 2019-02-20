@@ -23,14 +23,17 @@ class Parser:
         soup = BeautifulSoup(response, "html.parser")
         # get all server list
         servers = soup.select("div.server-wrapper > div.server")
-        for server in servers:
-            server_name = server.select_one('label').getText().strip().encode('utf-8')
-            if server_name not in movie['group']: movie['group'][server_name] = []
-            for ep in server.select('ul.episodes > li > a'):
-                movie['group'][server_name].append({
-                    'link': ep.get('href').encode('utf-8'),
-                    'title': 'Episode %s' % ep.text.strip().encode('utf-8'),
-                })
+        if len(servers) > 0:
+            for server in servers:
+                server_name = server.select_one('label').getText().strip().encode('utf-8')
+                if server_name not in movie['group']: movie['group'][server_name] = []
+                for ep in server.select('ul.episodes > li > a'):
+                    movie['group'][server_name].append({
+                        'link': ep.get('href').encode('utf-8'),
+                        'title': 'Episode %s' % ep.text.strip().encode('utf-8'),
+                    })
+        else:
+            return self.get_link(response)
 
         return movie
 
@@ -60,13 +63,18 @@ class Parser:
             sources = sources.group(1)
             response = Request().get(sources)
             sources = re.search("var sources = (.*);", response)
-            for source in json.loads(sources.group(1)):
-                    movie['links'].append({
-                        'link': source['file'].replace('\\', ''),
-                        'title': 'Link %s' % source['type'].encode('utf-8'),
-                        'type': source['type'].encode('utf-8'),
-                        'resolve': True
-                    })
+            if sources:
+                sources = json.loads(sources.group(1))
+                if type(sources) is dict:
+                    pass
+                else:
+                    for source in sources:
+                            movie['links'].append({
+                                'link': source['file'].replace('\\', ''),
+                                'title': 'Link %s' % source['type'].encode('utf-8'),
+                                'type': source['type'].encode('utf-8'),
+                                'resolve': True
+                            })
 
             return movie
 

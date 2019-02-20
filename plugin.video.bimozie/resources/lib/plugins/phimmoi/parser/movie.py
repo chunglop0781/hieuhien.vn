@@ -2,6 +2,7 @@
 from bs4 import BeautifulSoup
 from utils.mozie_request import Request
 from utils.aes import CryptoAES
+from utils.pastebin import PasteBin
 import re
 import json
 
@@ -30,7 +31,8 @@ class Parser:
             if items is not None and len(items) > 0:
                 movie['group'] = items
                 found = True
-            else: found = False
+            else:
+                found = False
             if found is False:
                 servers = soup.select('ul.server-list > li.backup-server')
                 movie['group'] = self.get_server_list(servers)
@@ -63,6 +65,13 @@ class Parser:
                             'link': url,
                             'title': 'Link Unknow',
                             'type': 'Unknow',
+                            'resolve': False
+                        })
+                    else:
+                        movie['links'].append({
+                            'link': self.get_hydrax(url),
+                            'title': 'Link 720p',
+                            'type': '720p',
                             'resolve': False
                         })
         return movie
@@ -147,3 +156,72 @@ class Parser:
                 b = 0
 
         return ''.join(result)
+
+    def get_hydrax(self, url):
+        response = Request().get(url)
+        id = re.search('"key":"(.*?)",', response).group(1)
+        params = {
+            'key': id,
+            'type': 'slug',
+            'value': re.search('#slug=(.*)', url).group(1)
+        }
+        response = Request().post('https://multi.hydrax.net/vip', params, {
+            'Origin': 'http://www.phimmoi.net',
+            'Referer': 'http://www.phimmoi.net/hydrax.html'
+        })
+
+        response = json.loads(response)
+        return self.create_effective_playlist(url, response)
+
+    def create_effective_playlist(self, url, response):
+        r = "#EXTM3U\n#EXT-X-VERSION:3\n"
+        if 'origin' in response:
+            r += "#EXT-X-STREAM-INF:BANDWIDTH=3998000,RESOLUTION=9999x9999\n"
+            r += "%s\n" % self.create_stream(response['origin'])
+        if 'fullhd' in response:
+            r += "#EXT-X-STREAM-INF:BANDWIDTH=2998000,RESOLUTION=1920x1080\n"
+            r += "%s\n" % self.create_stream(response['fullhd'])
+        if 'hd' in response:
+            r += "#EXT-X-STREAM-INF:BANDWIDTH=1998000,RESOLUTION=1280x720\n"
+            r += "%s\n" % self.create_stream(response['hd'])
+        if 'mhd' in response:
+            r += "#EXT-X-STREAM-INF:BANDWIDTH=996000,RESOLUTION=640x480\n"
+            r += "%s\n" % self.create_stream(response['mhd'])
+        if 'sd' in response:
+            r += "#EXT-X-STREAM-INF:BANDWIDTH=394000,RESOLUTION=480x360\n"
+            r += "%s\n" % self.create_stream(response['sd'])
+
+        url = PasteBin().paste(r, name=url, expire=60)
+        return url
+
+    def create_stream(self, stream):
+        txt = "#EXTM3U\n#EXT-X-VERSION:4\n#EXT-X-PLAYLIST-TYPE:VOD\n#EXT-X-TARGETDURATION:" + stream['duration'] + "\n#EXT-X-MEDIA-SEQUENCE:0\n";
+        if stream['type'] == 2:
+            i, j = 0, 0
+            for ranges in stream['multiRange']:
+                p = 0
+                for range in ranges:
+                    txt += "#EXTINF:%s,\n" % stream['extinf'][i]
+                    txt += "#EXT-X-BYTERANGE:%s\n" % range
+                    g, y = range.split('@')
+                    g = int(g)
+                    y = int(y)
+                    f = i > 0 and p + 1 or y
+                    p = y and f + g - 1 or g - 1
+                    part = '%s-%s.js' % (f, p)
+
+                    url = "%s/%s/%s/%s/%s/%s" % (
+                        'http://immortal.hydrax.net',
+                        stream['id'],
+                        stream['range'][i],
+                        stream['expired'],
+                        stream['multiData'][j]['file'],
+                        part
+                    )
+                    txt += "%s\n" % url
+                    i += 1
+                j += 1
+
+        txt += "#EXT-X-ENDLIST\n"
+        url = PasteBin().paste(txt, name=stream['id'], expire=60)
+        return url

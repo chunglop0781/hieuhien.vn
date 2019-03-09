@@ -22,14 +22,14 @@ class Request:
         if session:
             self.session = requests.session()
 
-    def get(self, url, headers=None):
+    def get(self, url, headers=None, params=None):
         print("Request URL: %s" % url)
         if not headers:
             headers = self.DEFAULT_HEADERS
         if self.session:
-            self.r = self.session.get(url, headers=headers, timeout=self.TIMEOUT)
+            self.r = self.session.get(url, headers=headers, timeout=self.TIMEOUT, params=params)
         else:
-            self.r = requests.get(url, headers=headers, timeout=self.TIMEOUT)
+            self.r = requests.get(url, headers=headers, timeout=self.TIMEOUT, params=params)
         return self.r.text
 
     def post(self, url, params, headers=None):
@@ -43,6 +43,16 @@ class Request:
         else:
             self.r = requests.post(url, data=params, headers=headers, timeout=self.TIMEOUT)
         return self.r.text
+
+    def head(self, url, params=None, headers=None, redirect=True):
+        if not headers:
+            headers = self.DEFAULT_HEADERS
+        if self.session:
+            self.r = self.session.head(url, headers=headers, timeout=self.TIMEOUT, params=params,
+                                       allow_redirects=redirect)
+        else:
+            self.r = requests.head(url, headers=headers, timeout=self.TIMEOUT, params=params, allow_redirects=redirect)
+        return self.r
 
     def get_request(self):
         return self.r

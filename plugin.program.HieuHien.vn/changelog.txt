@@ -1,2 +1,31 @@
-v1.0.0
-- Start
+v2.0.0
+- Nâng cấp một số chức năng
+- Sửa lỗi không đọc được file zip trên Kodi 18 platform Android 7
+v1.3.2
+- Sửa lỗi full Backup trên Windows
+v1.3.1 
+- Sửa lỗi backup luôn cả thumbnail
+v1.3.0
+- Thêm chức năng Backup/Restore bản Kodi cá nhân.
+	
+V1.2.2
+- Thêm tùy chọn cài đặt Kodi với Skin Confluence của v16 siêu nhẹ.
+
+v1.2.1
+- Sua loi khong giai nen duoc movies library
+
+v1.2.0
+- Them Movies Library lay nguon tu Google Drive
+- Them Menu Restore Data
+- Them Menu Donate
+
+v1.1.2
+Sua mot vai chuc nang
+- Thay Addon Gdrive bang Google Drive: sua duoc loi xem phu de
+- Tao thu vien phim tu addon Google Drive voi poster, Fanart
+- Them Farourites vao menu home
+- Them chuc nang don rac
+- Them chuc nang set cache cho file Advanced Setting
+
+v1.1.1
+Initial Release

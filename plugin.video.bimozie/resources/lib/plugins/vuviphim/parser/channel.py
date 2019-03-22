@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import re
 from requests.utils import quote
 
+
 class Parser:
     def get(self, response, page):
 
@@ -27,7 +28,10 @@ class Parser:
 
             type = movie.select_one('div.poster > span.quality').text.strip()
             label = "[%s] %s" % (type, title)
-            intro = movie.select_one('div.dtinfo > div.texto').find(text=True, recursive=False).strip()
+            try:
+                intro = movie.select_one('div.dtinfo > div.texto').find(text=True, recursive=False).strip()
+            except:
+                intro = ""
 
             channel['movies'].append({
                 'id': movie.select_one('div.poster > a').get('href'),
@@ -45,3 +49,28 @@ class Parser:
         url = quote(url).replace('%3A', ':')
 
         return url
+
+    def search_result(self, response):
+        channel = {
+            'page': 1,
+            'page_patten': None,
+            'movies': []
+        }
+
+        soup = BeautifulSoup(response, "html.parser")
+        for movie in soup.select('div.asp_r_pagepost'):
+            tag = movie.select_one('div.asp_content > h3 > a')
+            title = tag.find(text=True, recursive=False).strip().encode("utf-8")
+            thumb = movie.select_one('a.asp_res_image_url > div.asp_image').get('style')
+            thumb = re.search("\('(http.*?)'\);", thumb).group(1)
+
+            channel['movies'].append({
+                'id': tag.get('href'),
+                'label': title,
+                'title': title,
+                'realtitle': title,
+                'thumb': thumb,
+                'type': ''
+            })
+
+        return channel

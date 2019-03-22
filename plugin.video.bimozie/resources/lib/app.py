@@ -111,7 +111,7 @@ SITES = [
         'logo': 'https://yt3.ggpht.com/a-/AN66SAx84wKI577rKgX2IeQUiG31GaOhmVIu2le2rQ=s900-mo-c-c0xffffffff-rj-k-no',
         'class': 'Vtv16',
         'plugin': 'vtv16.plugin',
-        'version': 1
+        'version': 41
     },
 ]
 
@@ -125,6 +125,12 @@ def build_url(query):
     return BASEURL + '?' + urllib.urlencode(query)
 
 
+def globalContextMenu():
+    commands = list()
+    commands.append(('Settings', 'Addon.OpenSettings(%s)' % ADDON_ID,))
+    return commands
+
+
 def onInit():
     xbmcplugin.setPluginCategory(HANDLE, 'My Video Collection')
     xbmcplugin.setContent(HANDLE, 'movies')
@@ -134,6 +140,7 @@ def onInit():
             continue
 
         list_item = xbmcgui.ListItem(label=site['name'])
+        list_item.addContextMenuItems(globalContextMenu())
         list_item.setArt({'thumb': site['logo'], 'icon': site['logo']})
         url = build_url({'mode': 'category', 'module': site['plugin'], 'class': site['class']})
         is_folder = True
@@ -153,6 +160,7 @@ def list_category(cats, module, classname):
 
     for cat in cats:
         list_item = xbmcgui.ListItem(label=cat['title'])
+        list_item.addContextMenuItems(globalContextMenu())
         if 'subcategory' in cat and len(cat['subcategory']) > 0:
             url = build_url({'mode': 'category', 'url': cat['link'], 'name': cat['title'],
                              'subcategory': json.dumps(cat['subcategory']), 'module': module, 'class': classname})
@@ -171,6 +179,7 @@ def list_movie(movies, link, page, module, classname):
         for item in movies['movies']:
             try:
                 list_item = xbmcgui.ListItem(label=item['label'])
+                list_item.addContextMenuItems(globalContextMenu())
                 list_item.setLabel2(item['realtitle'])
                 list_item.setIconImage('DefaultVideo.png')
                 list_item.setArt({'thumb': item['thumb']})
@@ -319,18 +328,20 @@ def play(movie, title=None, thumb=None, direct=False):
             except:
                 pass
 
+    if not movie['link']: return
+
     if 'subtitle' in movie and movie['subtitle']:
         play_item.setSubtitles([movie['subtitle']])
 
-    # if mediatype == 'hls':
-    #     play_item.setProperty('inputstreamaddon', 'inputstream.adaptive')
-    #     play_item.setProperty('inputstream.adaptive.manifest_type', 'hls')
-    #     link = movie['link'].split('|')
-    #     if link and len(link) > 1:
-    #         play_item.setProperty('inputstream.adaptive.stream_headers', link[1])
-    #
-    #     play_item.setContentLookup(False)
-    # else:
+    if mediatype == 'hls':
+        play_item.setProperty('inputstreamaddon', 'inputstream.adaptive')
+        play_item.setProperty('inputstream.adaptive.manifest_type', 'hls')
+        link = movie['link'].split('|')
+        if link and len(link) > 1:
+            play_item.setProperty('inputstream.adaptive.stream_headers', link[1])
+
+        play_item.setContentLookup(False)
+
     play_item.setProperty('IsPlayable', 'true')
     play_item.setLabel(title)
     play_item.setArt({'thumb': thumb})

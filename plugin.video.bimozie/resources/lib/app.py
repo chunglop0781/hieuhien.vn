@@ -111,7 +111,7 @@ SITES = [
         'logo': 'https://yt3.ggpht.com/a-/AN66SAx84wKI577rKgX2IeQUiG31GaOhmVIu2le2rQ=s900-mo-c-c0xffffffff-rj-k-no',
         'class': 'Vtv16',
         'plugin': 'vtv16.plugin',
-        'version': 41
+        'version': 1
     },
 ]
 
@@ -404,12 +404,13 @@ def search(module, classname):
                                     xbmcgui.ListItem(label="[COLOR red][B]%s[/B][/COLOR]" % "Clear search text ..."),
                                     True)
         for txt in contents:
-            url = build_url({'mode': 'dosearch', 'module': module, 'class': classname, 'url': txt})
-            xbmcplugin.addDirectoryItem(HANDLE,
-                                        url,
-                                        xbmcgui.ListItem(
-                                            label="[COLOR blue][B]%s[/B][/COLOR]" % txt),
-                                        True)
+            try:
+                url = build_url({'mode': 'dosearch', 'module': module, 'class': classname, 'url': txt})
+                xbmcplugin.addDirectoryItem(HANDLE,
+                                            url,
+                                            xbmcgui.ListItem(label="[COLOR blue][B]%s[/B][/COLOR]" % txt),
+                                            True)
+            except: pass
     xbmcplugin.endOfDirectory(HANDLE)
 
 

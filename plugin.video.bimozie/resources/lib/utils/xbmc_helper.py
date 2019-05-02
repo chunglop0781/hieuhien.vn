@@ -3,6 +3,7 @@ import xbmc
 import xbmcaddon
 import os
 import json
+import re
 
 addon = xbmcaddon.Addon()
 ADDON_ID = addon.getAddonInfo('id')
@@ -28,9 +29,12 @@ def message(message='', title='', timeShown=5000):
         xbmc.executebuiltin("Dialog.Close(all, true)")
 
 
-def write_file(name, content):
+def write_file(name, content, binary=False):
     path = os.path.join(addon_data_dir, name)
-    f = open(path, mode='w')
+    mode = 'w'
+    if binary:
+        mode = 'wb'
+    f = open(path, mode=mode)
     f.write(content)
     f.close()
     return path
@@ -89,3 +93,8 @@ def search_history_get():
 
 def wait(sec):
     xbmc.sleep(sec * 1000)
+
+
+def convert_js_2_json(str):
+    vstr = re.sub(r'(?<={|,)\s?([a-zA-Z][a-zA-Z0-9]*)(?=:)', r'"\1"', str)
+    return json.loads(vstr)

@@ -1,12 +1,38 @@
 import re
 import json
 import math
+import base64
 from utils.mozie_request import Request, AsyncRequest
 from utils.pastebin import PasteBin
 import utils.xbmc_helper as helper
 
+origin = "http://www.phimmoi.net"
 
-def get_link(url):
+
+def get_guest_hydrax(url, media):
+    slug = re.search('\?v=(.*)', url).group(1)
+    response = Request().post('https://multi.hydrax.net/guest', {
+        'slug': slug
+    }, {
+        'Origin': 'http://hydrax.net'
+    })
+
+    response = json.loads(response)
+    if 'fullhd' in response:
+        return get_hydrax_phimmoi_stream(response['fullhd'], response['servers']), 'hls4'
+    elif 'hd' in response:
+        return get_hydrax_phimmoi_stream(response['hd'], response['servers']), 'hls4'
+    elif 'mhd' in response:
+        return get_hydrax_phimmoi_stream(response['mhd'], response['servers']), 'hls4'
+    elif 'sd' in response:
+        return get_hydrax_phimmoi_stream(response['sd'], response['servers']), 'hls4'
+    elif 'origin' in response:
+        return get_hydrax_phimmoi_stream(response['origin'], response['servers']), 'hls4'
+
+
+def get_vip_hydrax(url, media):
+    global origin
+
     response = Request().get(url)
     token = re.search('"key":"(.*?)",', response).group(1)
     params = {
@@ -14,21 +40,24 @@ def get_link(url):
         'type': 'slug',
         'value': re.search('#slug=(.*)', url).group(1)
     }
+
+    if re.search('vtv16', media['link']):
+        origin = "http://live.vtv16.com"
+
     response = Request().post('https://multi.hydrax.net/vip', params, {
-        'Origin': 'http://www.phimmoi.net',
-        'Referer': 'http://www.phimmoi.net/hydrax.html'
+        'Origin': origin
     })
 
     response = json.loads(response)
     r = "#EXTM3U\n#EXT-X-VERSION:3\n"
-    if 'hd' in response:
-        return get_hydrax_phimmoi_stream(response['hd'], response['servers']), 'hls4'
-        # r += "#EXT-X-STREAM-INF:BANDWIDTH=1998000,RESOLUTION=1280x720\n"
-        # r += "%s\n" % get_hydrax_phimmoi_stream(response['hd'], response['servers'])
-    elif 'fullhd' in response:
+    if 'fullhd' in response:
         return get_hydrax_phimmoi_stream(response['fullhd'], response['servers']), 'hls4'
         # r += "#EXT-X-STREAM-INF:BANDWIDTH=2998000,RESOLUTION=1920x1080\n"
         # r += "%s\n" % get_hydrax_phimmoi_stream(response['fullhd'], response['servers'])
+    elif 'hd' in response:
+        return get_hydrax_phimmoi_stream(response['hd'], response['servers']), 'hls4'
+        # r += "#EXT-X-STREAM-INF:BANDWIDTH=1998000,RESOLUTION=1280x720\n"
+        # r += "%s\n" % get_hydrax_phimmoi_stream(response['hd'], response['servers'])
     elif 'mhd' in response:
         return get_hydrax_phimmoi_stream(response['mhd'], response['servers']), 'hls4'
         # r += "#EXT-X-STREAM-INF:BANDWIDTH=996000,RESOLUTION=640x480\n"
@@ -47,6 +76,8 @@ def get_link(url):
 
 
 def get_hydrax_phimmoi_stream(stream, n):
+    global origin
+
     txt = "#EXTM3U\n#EXT-X-VERSION:4\n#EXT-X-PLAYLIST-TYPE:VOD\n#EXT-X-TARGETDURATION:" + stream[
         'duration'] + "\n#EXT-X-MEDIA-SEQUENCE:0\n"
 
@@ -58,7 +89,7 @@ def get_hydrax_phimmoi_stream(stream, n):
 
     r = len(stream['range'])
     o = len(n)
-    a = stream['expired']
+    a = 'expired' in stream and stream['expired'] or None
     s = 0
     l = stream['multiRange']
     h = len(l)
@@ -93,7 +124,10 @@ def get_hydrax_phimmoi_stream(stream, n):
                     p = y and f + g - 1 or g - 1
                     y = '%s-%s' % (f, p)
 
-                url = a and c + "/" + a + "/" + u or c + "/" + r + "/" + u
+                if a:
+                    url = a and c + "/" + a + "/" + u
+                else:
+                    url = c + "/" + str(r) + "/" + str(u)
                 # url += stream['id'] and "/" + y + ".js" or "/" + y + ".jpg"
                 if url not in links:
                     links.append(url)
@@ -118,8 +152,8 @@ def get_hydrax_phimmoi_stream(stream, n):
             # e.id && (c = c + "/" + e.id)
             c += stream['id'] and "/" + stream['id'] or ""
             url = a and c + "/basic/" + a + "/" + u + "." + (
-                        stream['id'] and "js" or "jpg") or c + "/basic/" + r + "/" + u + "." + (
-                              stream['id'] and "js" or "jpg")
+                    stream['id'] and "js" or "jpg") or c + "/basic/" + r + "/" + u + "." + (
+                          stream['id'] and "js" or "jpg")
 
             if url not in links:
                 links.append(url)
@@ -130,8 +164,9 @@ def get_hydrax_phimmoi_stream(stream, n):
                 txt += "#EXT-X-ENDLIST"
 
     arequest = AsyncRequest()
+
     results = arequest.get(links, headers={
-        'origin': 'http://www.phimmoi.net'
+        'origin': origin
     })
 
     media_urls = []
@@ -148,10 +183,10 @@ def get_hydrax_phimmoi_stream(stream, n):
         max_targetduration = 12
         play_list = "#EXTM3U\n#EXT-X-VERSION:4\n#EXT-X-PLAYLIST-TYPE:VOD\n#EXT-X-TARGETDURATION:12\n#EXT-X-MEDIA-SEQUENCE:0\n"
         if 'hash' in stream:
-            path = helper.write_file('hydrax.m3u8', stream['hash'])
+            path = helper.write_file('hydrax.m3u8', stream['hash'].encode(), binary=True)
             path = path.replace('\\', '/')
             # url = PasteBin().dpaste(stream['hash'], name='hydrax.key', expire=60)
-            play_list += "#EXT-X-KEY: METHOD=AES-128, URI=\"file://%s\", IV=%s\n" % (path, stream['iv'])
+            play_list += "#EXT-X-KEY:METHOD=AES-128,URI=\"file://%s\",IV=%s\n" % (path, stream['iv'])
 
         for link in media_urls:
             slashlink = link.replace('-', '\\-')

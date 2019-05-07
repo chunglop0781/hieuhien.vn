@@ -3,7 +3,6 @@ import re
 import utils.xbmc_helper as helper
 from .hosts import fshare, imacdn, phimmoi, hydrax, fptplay, ok, vtv16, hls_hydrax
 
-
 class LinkParser:
     def __init__(self, media):
         self.media = media
@@ -34,9 +33,9 @@ class LinkParser:
                 or re.search('tstream.xyz', self.url):
             return self.get_sstreamgg()
 
-        elif re.search('hls.phimmoi.net', self.url):
+        elif re.search('hls.phimmoi.[net|link]', self.url):
             helper.message('Phimmoi hls link parsing', 'Get Link')
-            return phimmoi.get_link(self.url, self.media['origin_url'])
+            return phimmoi.get_link(self.url, self.media['originUrl'])
 
         elif re.search('hydrax.html', self.url):
             helper.message('hydrax link parsing', 'Get Link')
@@ -49,7 +48,8 @@ class LinkParser:
             return self.get_youtube()
 
         elif re.search('imacdn.com', self.url):
-            return imacdn.get_link(self.url)
+            helper.message('imacdn HFF', 'Movie Found')
+            return imacdn.get_link(self.url), 'hls5'
 
         elif re.search('vtv16.com', self.url):
             return vtv16.get_link(self.url)

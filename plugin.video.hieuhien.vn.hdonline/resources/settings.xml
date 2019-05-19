@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<settings>
-    <setting id="playback_quality" type="labelenum" label="Chất Lượng" values="720|480|360" default="720" />
-	<setting id="proxy" type="text" label="Proxy" default="" />
-	<setting id="proxy_username" type="text" label="Username" default="" />
-	<setting id="proxy_password" type="text" option="hidden" label="Password" default="" />
-</settings>

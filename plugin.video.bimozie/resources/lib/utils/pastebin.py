@@ -1,5 +1,6 @@
 import json
 import requests
+import utils.xbmc_helper as helper
 
 
 class PasteBin:
@@ -12,7 +13,7 @@ class PasteBin:
         dockey = json.loads(response.text)['key']
         return "https://hastebin.com/raw/" + dockey
 
-    def dpaste(self, content, name="", expire=1440):
+    def dpaste_deprecated(self, content, name="", expire=1440):
         url = 'https://dpaste.de/api/'
         params = {
             'lexer ': 'text',
@@ -26,3 +27,16 @@ class PasteBin:
             url = r.text.replace('\n', '') + '/raw'
             print('Dpaste url: %s' % url)
             return url
+
+    def dpaste(self, content, name="", expire=1440):
+        print("Uploading playlist")
+        url = 'https://hastebin.com/documents'
+        params = content
+        r = requests.post(url,
+                          data=params,
+                          timeout=30)
+
+        resp = json.loads(r.text)
+        url = "https://hastebin.com/raw/%s" % resp['key']
+        print('hastebin url: %s' % url)
+        return url

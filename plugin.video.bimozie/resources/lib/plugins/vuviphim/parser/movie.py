@@ -52,12 +52,28 @@ class Parser:
             if len(sources) > 1:
                 try:
                     sources = sorted(sources, key=lambda elem: elem['label'].lower() in score and score[elem['label'].lower()] or 3, reverse=True)
-                except:
-                    pass
+                except: pass
             for source in sources:
                 movie['links'].append({
                     'link': source['file'].replace('\\', ''),
                     'title': 'Link %s' % source['type'].encode('utf-8'),
+                    'type': source['type'].encode('utf-8'),
+                    'resolve': False
+                })
+
+            return movie
+
+        sources = re.search(r'sources:\s?(\[.*?\]),', response)
+        if sources:
+            sources = sources.group(1)
+            sources = json.loads(sources)
+            try:
+                sources = sorted(sources, key=lambda elem: int(elem['label'][0:-1]), reverse=True)
+            except: pass
+            for source in sources:
+                movie['links'].append({
+                    'link': source['file'].replace('\\', ''),
+                    'title': 'Link %s' % source['label'].encode('utf-8'),
                     'type': source['type'].encode('utf-8'),
                     'resolve': False
                 })
@@ -70,7 +86,7 @@ class Parser:
             source = source.get('data-lazy-src').strip()
             movie['links'].append({
                 'link': source,
-                'title': 'Link %s' % source,
+                'title': 'Link %s' % source.encode('utf-8'),
                 'type': 'Unknow',
                 'resolve': False
             })

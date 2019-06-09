@@ -1,6 +1,7 @@
 import re
 import json
 import math
+import utils.xbmc_helper as helper
 from urlparse import urlparse
 from utils.mozie_request import Request, AsyncRequest
 from utils.pastebin import PasteBin
@@ -11,7 +12,8 @@ def get_link(url, media):
     base_url = urlparse(url)
     base_url = base_url.scheme + '://' + base_url.netloc
     header = {
-        'Origin': base_url
+        'Origin': base_url,
+        'User-Agent': 'Mozilla/5.0 (iPad; CPU OS 6_0 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/6.0 Mobile/10A5376e Safari/8536.25'
     }
     request = Request(header)
 
@@ -99,7 +101,7 @@ def calculate_stream(content, origin, referer):
 
         play_list += "#EXTINF:%s,\n" % duration
         play_list += "#EXT-X-BYTERANGE:%s@%s\n" % (lengthbyte, startbyte)
-        play_list += "%s\n" % json.loads(results[i])['url']
+        play_list += "%s\n" % helper.fixurl(json.loads(results[i])['url'])
 
         if duration > max_targetduration:
             max_targetduration = duration

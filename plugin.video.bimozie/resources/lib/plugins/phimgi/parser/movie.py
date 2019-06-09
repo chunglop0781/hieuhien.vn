@@ -36,7 +36,7 @@ class Parser:
 
         return movie
 
-    def get_link(self, response):
+    def get_link(self, response, originUrl):
         movie = {
             'group': {},
             'episode': [],
@@ -55,18 +55,21 @@ class Parser:
         sources = re.search(r'sources:\s?(.*?)\n', response)
         if sources:
             sources = json.loads(sources.group(1).replace('}],', '}]'))
-            sources = sorted(sources, key=lambda elem: int(elem['label'][0:-1]), reverse=True)
+            try:
+                sources = sorted(sources, key=lambda elem: int(elem['label'][0:-1]), reverse=True)
+            except: pass
 
             if len(sources) > 0:
-                source = sources[0]
-                label = 'label' in source and source['label'] or ''
-                movie['links'].append({
-                    'link': self.parse_link(source['file']),
-                    'title': 'Link %s' % label.encode('utf-8'),
-                    'type': label.encode('utf-8'),
-                    'resolve': False,
-                    'subtitle': subtitle
-                })
+                for source in sources:
+                    label = 'label' in source and source['label'] or ''
+                    movie['links'].append({
+                        'link': self.parse_link(source['file']),
+                        'title': 'Link %s' % label.encode('utf-8'),
+                        'type': label.encode('utf-8'),
+                        'resolve': False,
+                        'subtitle': subtitle,
+                        'originUrl': originUrl
+                    })
 
             return movie
 
@@ -76,9 +79,10 @@ class Parser:
             if source:
                 movie['links'].append({
                     'link': source,
-                    'title': 'Link %s' % source,
+                    'title': 'Link %s' % source.encode('utf-8'),
                     'type': 'Unknow',
-                    'resolve': False
+                    'resolve': False,
+                    'originUrl': originUrl
                 })
                 return movie
 

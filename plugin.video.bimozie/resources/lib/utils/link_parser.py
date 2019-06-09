@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 import re
 import utils.xbmc_helper as helper
-from .hosts import fshare, imacdn, phimmoi, hydrax, fptplay, ok, vtv16, hls_hydrax
+from urllib import urlencode
+from .hosts import fshare, imacdn, phimmoi, hydrax, fptplay, ok, vtv16, hls_hydrax, dongphim, fembed, hdclub
 
 class LinkParser:
     def __init__(self, media):
@@ -21,6 +22,12 @@ class LinkParser:
 
         elif re.search('dailymotion.com', self.url):
             return self.get_link_dailymotion()
+
+        elif re.search('fembed.com', self.url):
+            return fembed.get_link(self.url)
+
+        elif re.search('24hd.club', self.url):
+            return hdclub.get_link(self.url)
 
         elif re.search('fptplay.net', self.url):
             helper.message('FPTPlay hls link parsing', 'Get Link')
@@ -55,10 +62,11 @@ class LinkParser:
             return vtv16.get_link(self.url)
 
         elif re.search('hls.hydrax.net', self.url):
-            return hls_hydrax.get_link(self.url, self.media), 'hls'
+            return hls_hydrax.get_link(self.url, self.media), 'hls5'
 
         elif re.search('dgo.dongphim.net', self.url):
-            return self.url + "|Origin=http://dongphim.net", 'hls1'
+            # return self.url + "|Origin=http://dongphim.net", 'hls1'
+            return dongphim.get_link(self.url, self.media)
 
         elif self.url.endswith('m3u8'):
             return self.get_m3u8()
@@ -108,6 +116,14 @@ class LinkParser:
         # support to run with inputstream.adaptive
         if re.search('51.15.90.176', self.url):  # skip this for phimbathu & bilutv
             return self.url, 'hls5'
+
+        # hls-streaming.phimgi.net
+        if re.search('hls-streaming.phimgi.net', self.url):  # skip this for phimbathu & bilutv
+            url = self.url + "|%s" % urlencode({
+                'Origin': 'https://phimgi.net',
+                'Referer': self.media['originUrl']
+            })
+            return url, 'hls5'
 
         return self.url, 'hls'
 

@@ -85,7 +85,7 @@
 
 <addon
   id="plugin.video.tranhuyhoang.playlist"
-  version="[COLOR yellow]FINAL[/COLOR]"
+  version="0.1"
   name="[COLOR yellow] HPO [/COLOR][COLOR lime]Entertainment[/COLOR]"
   provider-name="tranhuyhoang">
   <requires>

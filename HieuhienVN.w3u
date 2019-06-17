@@ -34,51 +34,18 @@
 		  
 		  
 		  { 
-                "name": "Xem Bóng đá FIFA WORLD CUP U 20 theo giờ Việt Nam",
+                "name": "Xem Bóng đá tổng hợp",
                 "image": "https://s7.postimg.org/gxwfu12dn/u20.jpg",
                
                 "stations": [
  				  {
 
 
-		        "name": "(15h00 ngày 05/06/2017) - Tứ kết: Italy vs Zambia", "image": "http://i.imgur.com/keIENsc.png","url": "http://203.162.235.41:17822"},{
-			"name": "(15h00 ngày 05/06/2017) - Tứ kết: Italy vs Zambia",
-          	        "image": "https://s22.postimg.org/9vk2rbqep/ace.png",
-			"url": "acestream://dd7b7780bb13ce3757827f301c761ebe17a19015"
-		        },
-		        {
-			"name": "(15h00 ngày 05/06/2017) - Tứ kết: Italy vs Zambia",
-  		        "image": "http://www.liveonlinetv247.info/images/foxsports1.png","url": "http://dns1.theplayersklub.host:2095/live/simplycaz/simplycaz/625.ts","userAgent": "Mozilla/5.0 (Linux; Android 5.0.1; ALE-L21 Build/HuaweiALE-L21) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.81 Mobile Safari/537.36"				
-		        },
-		        {
-		        "name": "(18h00 ngày 05/06/2017) - Tứ kết: Mexico vs England", "image": "http://i.imgur.com/keIENsc.png","url": "http://203.162.235.41:17822"},{
-			"name": "(18h00 ngày 05/06/2017) - Tứ kết: Mexico vs England",
-          	        "image": "https://s22.postimg.org/9vk2rbqep/ace.png",
-			"url": "acestream://dd7b7780bb13ce3757827f301c761ebe17a19015"
-		        },
-		        {
-			"name": "(18h00 ngày 05/06/2017) - Tứ kết: Mexico vs England",
-  		        "image": "http://www.liveonlinetv247.info/images/foxsports1.png","url": "http://dns1.theplayersklub.host:2095/live/simplycaz/simplycaz/625.ts","userAgent": "Mozilla/5.0 (Linux; Android 5.0.1; ALE-L21 Build/HuaweiALE-L21) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.81 Mobile Safari/537.36"				
-		        },
-		        {
-			"name": "(15h00 ngày 08/06/2017) - Bán kết",
-  		        "image": "http://i.imgur.com/keIENsc.png","url": "http://203.162.235.41:17822"
-		        },
-		        {
-			"name": "(15h00 ngày 08/06/2017) - Bán kết",
-  		        "image": "http://www.liveonlinetv247.info/images/foxsports1.png","url": "http://dns1.theplayersklub.host:2095/live/simplycaz/simplycaz/625.ts","userAgent": "Mozilla/5.0 (Linux; Android 5.0.1; ALE-L21 Build/HuaweiALE-L21) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.81 Mobile Safari/537.36"				
-		        },
-		        {
-			"name": "(18h00 ngày 08/06/2017) - Bán kết",
-  		        "image": "http://i.imgur.com/keIENsc.png","url": "http://203.162.235.41:17822"
-		        },
-		        {
-			"name": "(18h00 ngày 08/06/2017) - Bán kết",
-  		        "image": "http://www.liveonlinetv247.info/images/foxsports1.png","url": "http://dns1.theplayersklub.host:2095/live/simplycaz/simplycaz/625.ts","userAgent": "Mozilla/5.0 (Linux; Android 5.0.1; ALE-L21 Build/HuaweiALE-L21) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.81 Mobile Safari/537.36"				
-		        },
-		        {
-			"name": "(13h30 ngày 11/06/2017) - Tranh giải ba",
-  		        "image": "http://www.liveonlinetv247.info/images/foxsports1.png","url": "http://dns1.theplayersklub.host:2095/live/simplycaz/simplycaz/625.ts","userAgent": "Mozilla/5.0 (Linux; Android 5.0.1; ALE-L21 Build/HuaweiALE-L21) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.81 Mobile Safari/537.36"				
+		        "name": "XOI.TV S1", "image": "https://raw.githubusercontent.com/chunglop0781/xoilactv/master/unnamed.jpg","url": "https://raw.githubusercontent.com/chunglop0781/xoilactv/master/S1"},{
+			"name": "XOI.TV S2", "image": "https://raw.githubusercontent.com/chunglop0781/xoilactv/master/unnamed.jpg","url": "https://raw.githubusercontent.com/chunglop0781/xoilactv/master/S2"},{
+			"name": "XOI.TV S3", "image": "https://raw.githubusercontent.com/chunglop0781/xoilactv/master/unnamed.jpg","url": "https://raw.githubusercontent.com/chunglop0781/xoilactv/master/S3"},{
+			"name": "XOI.TV S4", "image": "https://raw.githubusercontent.com/chunglop0781/xoilactv/master/unnamed.jpg","url": "https://raw.githubusercontent.com/chunglop0781/xoilactv/master/S4"},{
+			"name": "FPT Play S1", "image": "https://fptplay.vn/images/logo.png"","url":"https://raw.githubusercontent.com/chunglop0781/truc_tiep_bong_da_fpt_play/master/S1"
 
     }
                 
